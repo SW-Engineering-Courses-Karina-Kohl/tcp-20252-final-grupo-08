@@ -2,6 +2,7 @@ package Graphical_Interfaces;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 import static Graphical_Interfaces.RoundedButton.setButtonSize;
 
@@ -11,8 +12,21 @@ public class HomeMenu_GraphicWindow extends JPanel {
     private JLabel title;
     private RoundedButton startButton;
     private RoundedButton optionsButton;
+    private int buttonWidth;
+    private int buttonHeight;
+    private int windowsHeight;
+    private int windowsWidth;
 
-    public HomeMenu_GraphicWindow() {
+    public HomeMenu_GraphicWindow(ArrayList<Object[]> sizes) {
+
+        Object[] first = sizes.get(0);
+
+        windowsWidth = (int) first[0];        // 1000
+        windowsHeight = (int) first[1];
+
+        buttonWidth = (int)(windowsWidth * 0.22);
+        buttonHeight = (int)(windowsHeight * 0.07);
+
 
         setLayout(null); // vamos posicionar o container manualmente
 
@@ -33,7 +47,7 @@ public class HomeMenu_GraphicWindow extends JPanel {
         startButton.setForeground(Colors.TEXT_BUTTON);
         startButton.setFocusPainted(false);
         startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        setButtonSize(startButton, 220, 70);
+        setButtonSize(startButton, buttonWidth, buttonHeight);
 
 
         // Botão B
@@ -42,7 +56,7 @@ public class HomeMenu_GraphicWindow extends JPanel {
         optionsButton.setForeground(Colors.TEXT_BUTTON);
         optionsButton.setFocusPainted(false);
         optionsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        setButtonSize(optionsButton, 220, 70);
+        setButtonSize(optionsButton, buttonWidth, buttonHeight);
 
         // Espaçamentos internos (igual HTML margin)
         container.add(Box.createVerticalStrut(20));
@@ -95,13 +109,19 @@ public class HomeMenu_GraphicWindow extends JPanel {
 
 
     public static void main(String[] args) {
+        int width = 1000;
+        int height = 800;
+
+        ArrayList<Object[]> sizes = new ArrayList<>();
+        sizes.add(new Object[] {width, height });
+
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Square com Container Interno");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            frame.add(new HomeMenu_GraphicWindow());
+            frame.add(new HomeMenu_GraphicWindow(sizes));
 
-            frame.setSize(800, 800);
+            frame.setSize(width, height);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });

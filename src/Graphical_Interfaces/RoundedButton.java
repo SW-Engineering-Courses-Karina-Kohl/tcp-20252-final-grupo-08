@@ -30,18 +30,6 @@ public class RoundedButton extends JButton {
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
 
-        // Se quiser efeito ao clicar:
-        if (getModel().isPressed()) {
-            g2.setColor(new Color(0, 0, 0, 50)); // escurece um pouco
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
-        }
-
-        // Se quiser efeito hover:
-        else if (getModel().isRollover()) {
-            g2.setColor(new Color(255, 255, 255, 40)); // ilumina um pouco
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
-        }
-
         g2.dispose();
 
         // Agora sim desenha texto / ícone por cima
@@ -55,15 +43,11 @@ public class RoundedButton extends JButton {
         btn.setMaximumSize(d);
     }
 
-
-    @Override
-    protected void paintBorder(Graphics g) {
-        // Se quiser borda:
-        // Graphics2D g2 = (Graphics2D) g.create();
-        // g2.setColor(Color.WHITE);
-        // g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, radius, radius);
-        // g2.dispose();
-        // No momento: sem bordas
+    public static void setButtonSize(JComboBox<?> box, int w, int h) {
+        Dimension d = new Dimension(w, h);
+        box.setPreferredSize(d);
+        box.setMinimumSize(d);
+        box.setMaximumSize(d);
     }
 
 }
