@@ -17,6 +17,8 @@ public class OptionsMenu_GraphicWindow extends JPanel {
     private RoundedButton soundButton;
     private SizedComboBox<String> soundSelector;
 
+    private JButton backButton;
+
     private int spaceButtons;
     private int boxWidth;
     private int boxHeight;
@@ -32,10 +34,10 @@ public class OptionsMenu_GraphicWindow extends JPanel {
 
         Object[] first = sizes.get(0);
 
-        actualScale = (String) first[0];      // "640p"
-        actualSound = (String) first[1];      // "100%"
-        int windowsWidth = (int) first[2];    // 1000
-        int windowsHeight = (int) first[3];   // 800
+        int windowsWidth = (int) first[0];
+        int windowsHeight = (int) first[1];
+        actualScale = (String) first[2];
+        actualSound = (String) first[3];
 
         boxWidth = (int) (windowsWidth * 0.22);
         boxHeight = (int) (windowsHeight * 0.07);
@@ -52,6 +54,24 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         container.setOpaque(false);
 
         containerManager = new ContainerManager(container);
+
+        // ==================== BackButton ====================
+        backButton = new JButton("←");
+        backButton.setFocusPainted(false);
+        backButton.setBorderPainted(false);
+        backButton.setContentAreaFilled(false);
+        backButton.setForeground(Colors.TEXT_OPTION_BUTTON);
+        backButton.setBounds(10, 10, boxWidth, boxHeight);
+        backButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        backButton.addActionListener(e -> {
+            Window window = SwingUtilities.getWindowAncestor(this);
+            if (window != null) {
+                window.dispose();
+            }
+        });
+
+        add(backButton);
 
 
         // ===================== TÍTULO =====================
@@ -120,6 +140,7 @@ public class OptionsMenu_GraphicWindow extends JPanel {
                 containerManager.ajustar(getWidth(), getHeight());
             }
         });
+
     }
 
     @Override
@@ -144,6 +165,8 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         title.setFont(new Font("Serif", Font.BOLD, fontSizeTitle));
         scaleButton.setFont(new Font("Serif", Font.BOLD, fontSizeButton));
         soundButton.setFont(new Font("Serif", Font.BOLD, fontSizeButton));
+        backButton.setFont(new Font("Serif", Font.BOLD, fontSizeButton));
+
     }
 
     public static void main(String[] args) {
@@ -152,7 +175,7 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         String  scale = new  String("640p");
         String  sound = new  String("100%");
         ArrayList<Object[]> sizes = new ArrayList<>();
-        sizes.add(new Object[]{scale, sound, width, height});
+        sizes.add(new Object[]{width, height, scale, sound});
 
         OptionsMenu_GraphicWindow menuOptions = new OptionsMenu_GraphicWindow(sizes);
 
