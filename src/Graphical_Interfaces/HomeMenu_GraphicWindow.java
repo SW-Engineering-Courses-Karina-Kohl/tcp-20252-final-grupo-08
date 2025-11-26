@@ -78,6 +78,20 @@ public class HomeMenu_GraphicWindow extends JPanel {
                 containerManager.ajustar(getWidth(), getHeight());
             }
         });
+
+        optionsButton.addActionListener(e -> {
+            // Cria o painel da nova tela
+            OptionsMenu_GraphicWindow op = new OptionsMenu_GraphicWindow(sizes);
+
+            // Cria janela sobreposta
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Options", false);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setSize(800, 600);
+            dialog.setLocationRelativeTo(null);
+            dialog.add(op);
+            dialog.setVisible(true);
+        });
+
     }
 
     @Override
@@ -105,12 +119,19 @@ public class HomeMenu_GraphicWindow extends JPanel {
         optionsButton.setFont(new Font("Serif", Font.BOLD, fontSizeButton));
     }
 
+    private void setAction(JButton button, Runnable action) {
+        button.addActionListener(e -> action.run());
+    }
+
+
     public static void main(String[] args) {
         int width = 640;
         int height = 480;
+        String actualScale = new String("640p");
+        String actualSound = new String("100%");
 
         ArrayList<Object[]> sizes = new ArrayList<>();
-        sizes.add(new Object[] {width, height });
+        sizes.add(new Object[] {width, height, actualScale, actualSound});
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Square com Container Interno");
