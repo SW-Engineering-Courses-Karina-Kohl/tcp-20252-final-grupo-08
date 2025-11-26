@@ -3,12 +3,14 @@ package Graphical_Interfaces;
 import javax.swing.*;
 import java.awt.*;
 
+import static Graphical_Interfaces.RoundedButton.setButtonSize;
+
 public class HomeMenu_GraphicWindow extends JPanel {
 
     private JPanel container;
     private JLabel title;
-    private JButton startButton;
-    private JButton optionsButton;
+    private RoundedButton startButton;
+    private RoundedButton optionsButton;
 
     public HomeMenu_GraphicWindow() {
 
@@ -26,18 +28,21 @@ public class HomeMenu_GraphicWindow extends JPanel {
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Botão A
-        startButton = new JButton("Start");
+        startButton = new RoundedButton("Start",20);
         startButton.setBackground(Colors.GENERAL_BUTTON);
         startButton.setForeground(Colors.TEXT_BUTTON);
         startButton.setFocusPainted(false);
         startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        setButtonSize(startButton, 220, 70);
+
 
         // Botão B
-        optionsButton = new JButton("Options");
+        optionsButton = new RoundedButton("Options",20);
         optionsButton.setBackground(Colors.GENERAL_BUTTON);
         optionsButton.setForeground(Colors.TEXT_BUTTON);
         optionsButton.setFocusPainted(false);
         optionsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        setButtonSize(optionsButton, 220, 70);
 
         // Espaçamentos internos (igual HTML margin)
         container.add(Box.createVerticalStrut(20));
@@ -96,7 +101,7 @@ public class HomeMenu_GraphicWindow extends JPanel {
 
             frame.add(new HomeMenu_GraphicWindow());
 
-            frame.setSize(1000, 900);
+            frame.setSize(800, 800);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
