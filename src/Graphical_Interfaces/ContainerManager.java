@@ -11,7 +11,7 @@ public class ContainerManager {
         this.container = container;
     }
 
-    public void ajustar(int parentWidth, int parentHeight) {
+    public void ajust(int parentWidth, int parentHeight) {
 
         int containerWidth = (int) (parentWidth * 0.85);
         int containerHeight = (int) (parentHeight * 0.85);
