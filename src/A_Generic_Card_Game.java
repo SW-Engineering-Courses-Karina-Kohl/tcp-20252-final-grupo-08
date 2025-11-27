@@ -1,19 +1,26 @@
 import Graphical_Interfaces.HomeMenu_GraphicWindow;
+import Sounds.MusicPlayer;
+import utils.EnummerateSounds;
 
 import javax.swing.*;
 import java.util.ArrayList;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class A_Generic_Card_Game {
     public static void main(String[] args) {
         int width = 640;
         int height = 480;
+        int actualSound = 4;
+
+        EnummerateSounds[] sounds = EnummerateSounds.values();
+
         String actualScale = new String("640p");
-        String actualSound = new String("100%");
 
         ArrayList<Object[]> sizes = new ArrayList<>();
-        sizes.add(new Object[] {width, height, actualScale, actualSound});
+        sizes.add(new Object[] {width, height, actualScale, sounds[actualSound].getLabel()});
+
+        MusicPlayer player = new MusicPlayer("src/Sounds/ambient-background-2-421085.wav");
+        player.setVolume(sounds[actualSound].getValue());
+        player.playLoop();
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Square com Container Interno");
@@ -25,5 +32,6 @@ public class A_Generic_Card_Game {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
+
     }
 }
