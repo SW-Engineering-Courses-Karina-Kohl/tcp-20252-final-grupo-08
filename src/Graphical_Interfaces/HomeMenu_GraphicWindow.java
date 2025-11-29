@@ -138,7 +138,7 @@ public class HomeMenu_GraphicWindow extends JPanel {
     }
 
 
-    /*public static void main(String[] args) {
+    /*public static void main(String[] args) { //Necessário para integração MatchWindow
         int width = 640;
         int height = 480;
         String actualScale = new String("640p");
