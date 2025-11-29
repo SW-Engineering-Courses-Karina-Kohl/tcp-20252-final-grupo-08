@@ -6,15 +6,18 @@ import Domain.GameAction;
 import Domain.MonsterCard;
 import static Graphical_Interfaces.Colors.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-
 // Implementa o Listener do CardWidget para saber quando uma carta foi clicada 
 public class MatchWindow extends JPanel implements CardWidget.OnCardClickListener {
 
+    private JLayeredPane layeredPane;
+    private JPanel gameContent; 
     private JPanel handPanel;         // Mão do Jogador (contém CardWidgets)
     private JPanel inspectionPanel;   // Painel de Zoom 
     
@@ -23,10 +26,38 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         setSize(width, height);
         setBackground(GENERAL_BACKGROUND.darker());
         
+        layeredPane = new JLayeredPane();
+        add(layeredPane, BorderLayout.CENTER);
+
+        gameContent = new JPanel(new BorderLayout());
+        gameContent.setOpaque(false);
+        layeredPane.add(gameContent, JLayeredPane.DEFAULT_LAYER);
+
         initializeUIControls();
         initializeHandPanel(width, height);
         initializeInspectionPanel(width, height); 
-        
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int w = getWidth();
+                int h = getHeight();
+                
+                gameContent.setBounds(0, 0, w, h);
+                
+                if (inspectionPanel != null) {
+                    int panelW = (int)(w * 0.5);
+                    int panelH = (int)(h * 0.8);
+                    inspectionPanel.setBounds((w - panelW)/2, (h - panelH)/2, panelW, panelH);
+                }
+                
+                if (handPanel != null) {
+                    int handH = (int)(h * 0.35);
+                    handPanel.setPreferredSize(new Dimension(w, handH));
+                    handPanel.revalidate();
+                }
+            }
+        });
     }
     
     private void initializeUIControls() {
@@ -39,7 +70,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         topPanel.setOpaque(false);
         topPanel.add(exitButton);
         
-        add(topPanel, BorderLayout.NORTH);
+        gameContent.add(topPanel, BorderLayout.NORTH);
         
         exitButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this, 
@@ -107,7 +138,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         handPanel.setBackground(new Color(0, 0, 0, 80)); 
         handPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
         
-        add(handPanel, BorderLayout.SOUTH);
+        gameContent.add(handPanel, BorderLayout.SOUTH);
         loadMockHand();
     }
     
@@ -123,8 +154,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         inspectionPanel.setBorder(BorderFactory.createLineBorder(GENERAL_BUTTON, 5));
         inspectionPanel.setVisible(false);
         
-        add(inspectionPanel);
-        setComponentZOrder(inspectionPanel, 0); 
+        layeredPane.add(inspectionPanel, JLayeredPane.PALETTE_LAYER);
     }
 
     private void loadMockHand() {
@@ -162,7 +192,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         inspectionPanel.removeAll();
         
         handPanel.setVisible(false);
-        handPanel.setEnabled(false);
+        gameContent.setEnabled(false);
         inspectionPanel.setVisible(true); 
         
         inspectionPanel.add(Box.createVerticalStrut(20));
@@ -217,8 +247,15 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         backBtn.addActionListener(e -> closeInspection());
         
         inspectionPanel.add(backBtn);
+        
+        int w = getWidth();
+        int h = getHeight();
+        int panelW = (int)(w * 0.5);
+        int panelH = (int)(h * 0.8);
+        inspectionPanel.setBounds((w - panelW)/2, (h - panelH)/2, panelW, panelH);
+        
         inspectionPanel.revalidate();
-        repaint();
+        inspectionPanel.repaint();
     }
     
     private JPanel createStatsPanel(Card card) {
@@ -261,7 +298,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     
     private void closeInspection() {
         inspectionPanel.setVisible(false);
-        handPanel.setEnabled(true);
+        gameContent.setEnabled(true);
         handPanel.setVisible(true);
     }
     
