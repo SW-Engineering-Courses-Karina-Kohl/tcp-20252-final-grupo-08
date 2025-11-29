@@ -1,6 +1,7 @@
 package Graphical_Interfaces;
 
 import Domain.Card;
+import Domain.CardType;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,6 +9,17 @@ import java.net.URL;
 import javax.swing.*;
 
 public class CardWidget extends JPanel {
+    
+    private static final String PLACEHOLDER_PATH = "/resources/placeholder.png";
+    private static final String HTML_CENTER_TAG = "<html><center>%s</center></html>";
+    private static final int BORDER_THICKNESS = 2;
+    private static final int FONT_SIZE = 14;
+    private static final int LABEL_PADDING_TOP = 5;
+    
+    // Proporções da imagem dentro do Card
+    private static final double IMG_WIDTH_RATIO = 0.6;
+    private static final double IMG_HEIGHT_RATIO = 0.5;
+
     private final Card cardData;
     private boolean isHovered = false;
     private Image cardImage;
@@ -21,36 +33,42 @@ public class CardWidget extends JPanel {
         this.cardData = card;
         setPreferredSize(new Dimension(width, height));
         
-        Color cardColor = (card.getType() == Domain.CardType.MONSTER) 
-                            ? Colors.MONSTER_COLOR 
-                            : Colors.SPELL_COLOR;
-        
-        setBackground(cardColor);
-        setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        setBackground(getCardColor(card.getType()));
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, BORDER_THICKNESS));
         setLayout(new BorderLayout()); 
 
-        URL imageUrl = getClass().getResource(card.getImagePath()); 
+        loadImage(card.getImagePath());
+        initializeLabel(card.getName());
+        setupMouseInteractions(listener);
+    }
     
+    private Color getCardColor(CardType type) {
+        return (type == CardType.MONSTER) ? Colors.MONSTER_COLOR : Colors.SPELL_COLOR;
+    }
+
+    private void loadImage(String path) {
+        URL imageUrl = getClass().getResource(path);
         if (imageUrl == null) {
-            imageUrl = getClass().getResource("/resources/placeholder.png");
+            imageUrl = getClass().getResource(PLACEHOLDER_PATH);
         }
 
         if (imageUrl != null) {
             this.cardImage = new ImageIcon(imageUrl).getImage();
         } else {
-            System.err.println("Imagem placeholder.png não encontrada!");
+            System.err.println("Imagem placeholder não encontrada em: " + PLACEHOLDER_PATH);
         }
-        
-        //Texto em html para não ficar cortado
-        nameLabel = new JLabel("<html><center>" + card.getName() + "</center></html>");
-        nameLabel.setForeground(Colors.TEXT_BUTTON);
-        nameLabel.setFont(new Font("Serif", Font.BOLD, 14));
-        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 0, 2));
-        add(nameLabel, BorderLayout.NORTH);
+    }
 
-        //Integração do Mouse para clique e feedback visual da seleção de cartas
+    private void initializeLabel(String name) {
+        nameLabel = new JLabel(String.format(HTML_CENTER_TAG, name));
+        nameLabel.setForeground(Colors.TEXT_BUTTON);
+        nameLabel.setFont(new Font("Serif", Font.BOLD, FONT_SIZE));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(LABEL_PADDING_TOP, 2, 0, 2));
+        add(nameLabel, BorderLayout.NORTH);
+    }
+
+    private void setupMouseInteractions(OnCardClickListener listener) {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -68,7 +86,6 @@ public class CardWidget extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                //Dispara o evento de inspeção.
                 listener.onCardClicked(cardData);
             }
         });
@@ -80,25 +97,24 @@ public class CardWidget extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Desenho e feedback visual
-        if (isHovered) {
-            g2d.setColor(getBackground().brighter());
-        } else {
-            g2d.setColor(getBackground());
-        }
+        g2d.setColor(isHovered ? getBackground().brighter() : getBackground());
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
-        if (cardImage != null) {
-            int imgW = (int) (getWidth() * 0.6); 
-            int imgH = (int) (getHeight() * 0.5); 
+        drawCardImage(g2d);
+    }
 
-            int titleHeight = nameLabel.getHeight();
-            int availableHeight = getHeight() - titleHeight;
-            
-            int x = (getWidth() - imgW) / 2;
-            int y = titleHeight + (availableHeight - imgH) / 2;
+    private void drawCardImage(Graphics2D g2d) {
+        if (cardImage == null) return;
 
-            g2d.drawImage(cardImage, x, y, imgW, imgH, this);
-        }
+        int imgW = (int) (getWidth() * IMG_WIDTH_RATIO); 
+        int imgH = (int) (getHeight() * IMG_HEIGHT_RATIO); 
+
+        int titleHeight = nameLabel.getHeight();
+        int availableHeight = getHeight() - titleHeight;
+        
+        int x = (getWidth() - imgW) / 2;
+        int y = titleHeight + (availableHeight - imgH) / 2;
+
+        g2d.drawImage(cardImage, x, y, imgW, imgH, this);
     }
 }

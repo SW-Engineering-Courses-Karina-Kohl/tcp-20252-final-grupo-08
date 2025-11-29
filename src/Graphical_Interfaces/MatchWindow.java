@@ -11,6 +11,22 @@ import javax.swing.*;
 
 public class MatchWindow extends JPanel implements CardWidget.OnCardClickListener {
 
+    
+    private static final double INSPECTION_PANEL_WIDTH_RATIO = 0.5;
+    private static final double INSPECTION_PANEL_HEIGHT_RATIO = 0.9;
+    private static final double HAND_PANEL_HEIGHT_RATIO = 0.35;
+    private static final double CARD_WIDTH_RATIO = 0.66;
+    private static final int HAND_MARGIN = 35;
+    private static final int HAND_GAP = 15;
+    private static final int EXIT_BUTTON_RADIUS = 15;
+    
+    
+    private static final String TXT_EXIT_BUTTON = "Voltar ao Menu";
+    private static final String TXT_CONFIRM_TITLE = "Sair";
+    private static final String TXT_CONFIRM_MSG = "Deseja voltar ao menu principal?";
+    private static final String WINDOW_TITLE_MENU = "A Generic Card Game - Menu Principal";
+    private static final String WINDOW_TITLE_MATCH = "A Generic Card Game - Partida";
+
     private final JLayeredPane layeredPane;
     private final JPanel gameContent;
     private JPanel handPanel;
@@ -46,21 +62,20 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         gameContent.setBounds(0, 0, w, h);
         
         if (inspectionPanel != null && inspectionPanel.isVisible()) {
-            int panelW = (int)(w * 0.5);
-            // AUMENTADO PARA 0.9 (90%) PARA EVITAR CORTAR O BOTÃO
-            int panelH = (int)(h * 0.9); 
+            int panelW = (int)(w * INSPECTION_PANEL_WIDTH_RATIO);
+            int panelH = (int)(h * INSPECTION_PANEL_HEIGHT_RATIO); 
             inspectionPanel.setBounds((w - panelW)/2, (h - panelH)/2, panelW, panelH);
         }
         
         if (handPanel != null) {
-            int handH = (int)(h * 0.35);
+            int handH = (int)(h * HAND_PANEL_HEIGHT_RATIO);
             handPanel.setPreferredSize(new Dimension(w, handH));
             handPanel.revalidate();
         }
     }
 
     private void initializeTopBar() {
-        RoundedButton exitButton = new RoundedButton("Voltar ao Menu", 15);
+        RoundedButton exitButton = new RoundedButton(TXT_EXIT_BUTTON, EXIT_BUTTON_RADIUS);
         exitButton.setBackground(Colors.END_GAME_BUTTON);
         exitButton.setForeground(Colors.TEXT_END_GAME_BUTTON);
         
@@ -75,7 +90,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     
     private void handleExitToMenu() {
         int confirm = JOptionPane.showConfirmDialog(this, 
-            "Deseja voltar ao menu principal?", "Sair", JOptionPane.YES_NO_OPTION);
+            TXT_CONFIRM_MSG, TXT_CONFIRM_TITLE, JOptionPane.YES_NO_OPTION);
             
         if (confirm == JOptionPane.YES_OPTION) {
             JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -96,7 +111,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         });
 
         SwingUtilities.invokeLater(() -> {
-            JFrame menuFrame = new JFrame("A Generic Card Game - Menu Principal");
+            JFrame menuFrame = new JFrame(WINDOW_TITLE_MENU);
             menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             menuFrame.setResizable(false);
             menuFrame.add(new HomeMenu_GraphicWindow(sizes, starter));
@@ -108,7 +123,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     }
 
     private JFrame createGameFrame(int w, int h) {
-        JFrame gameFrame = new JFrame("A Generic Card Game - Partida");
+        JFrame gameFrame = new JFrame(WINDOW_TITLE_MATCH);
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setResizable(false); 
         
@@ -120,11 +135,11 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     
     private void initializeHandPanel(int w, int h) {
         handPanel = new JPanel();
-        int handHeight = (int)(h * 0.35);
+        int handHeight = (int)(h * HAND_PANEL_HEIGHT_RATIO);
         
         handPanel.setPreferredSize(new Dimension(w, handHeight));
         handPanel.setBackground(new Color(0, 0, 0, 80)); 
-        handPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        handPanel.setLayout(new FlowLayout(FlowLayout.CENTER, HAND_GAP, HAND_GAP));
         
         gameContent.add(handPanel, BorderLayout.SOUTH);
         loadMockHand();
@@ -137,9 +152,8 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         mockCards.add(CardFactory.createHealing());
 
         int panelHeight = handPanel.getPreferredSize().height;
-        int margin = 35; 
-        int cardHeight = panelHeight - margin;
-        int cardWidth = (int)(cardHeight * 0.66);
+        int cardHeight = panelHeight - HAND_MARGIN;
+        int cardWidth = (int)(cardHeight * CARD_WIDTH_RATIO);
         
         for (Card card : mockCards) {
             CardWidget widget = new CardWidget(card, cardWidth, cardHeight, this); 
