@@ -98,7 +98,7 @@ public class HomeMenu_GraphicWindow extends JPanel {
             OptionsMenu_GraphicWindow op = new OptionsMenu_GraphicWindow(sizes);
 
             // Cria janela sobreposta
-            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Options", false);
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "A Generic Card Game - Opções", false);
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setSize(800, 600);
             dialog.setLocationRelativeTo(null);

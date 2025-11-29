@@ -21,7 +21,7 @@ public class A_Generic_Card_Game {
 
         GameStartListener starter = (w, h) -> {
             SwingUtilities.invokeLater(() -> {
-                JFrame gameFrame = new JFrame("A Generic Card Game - Match");
+                JFrame gameFrame = new JFrame("A Generic Card Game - Partida");
                 gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 
@@ -40,7 +40,7 @@ public class A_Generic_Card_Game {
         player.playLoop();
 
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Square com Container Interno");
+            JFrame frame = new JFrame("A Generic Card Game - Menu Principal");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             frame.add(new HomeMenu_GraphicWindow(sizes, starter)); //Alterado para integração com MatchWindow

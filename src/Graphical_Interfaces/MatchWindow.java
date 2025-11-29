@@ -30,28 +30,73 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     }
     
     private void initializeUIControls() {
-        //Botão Encerrar Partida
-        RoundedButton exitButton = new RoundedButton("Encerrar Partida", 15);
+        // Botão Voltar ao Menu
+        RoundedButton exitButton = new RoundedButton("Voltar ao Menu", 15);
         exitButton.setBackground(END_GAME_BUTTON);
         exitButton.setForeground(TEXT_END_GAME_BUTTON);
+        
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setOpaque(false);
         topPanel.add(exitButton);
         
         add(topPanel, BorderLayout.NORTH);
         
-        
-        
         exitButton.addActionListener(e -> {
-            // Lógica de sair 
-            int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja encerrar a partida?");
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Deseja voltar ao menu principal?", 
+                "Sair", 
+                JOptionPane.YES_NO_OPTION);
+                
             if (confirm == JOptionPane.YES_OPTION) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                if (frame != null) frame.dispose();
+                
+                JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                if (currentFrame != null) currentFrame.dispose();
+
+                
+                int w = getWidth();
+                int h = getHeight();
+                
+                // recria a lista de configurações padrão para evitar possivel erro no OptionsMenu
+                ArrayList<Object[]> sizes = new ArrayList<>();
+                sizes.add(new Object[] {w, h, "640p", "100%"}); 
+
+                //Recria o Listener (para novas partidas)
+                GameStartListener starter = (newW, newH) -> {
+                    SwingUtilities.invokeLater(() -> {
+                        JFrame gameFrame = new JFrame("A Generic Card Game - Partida");
+                        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        gameFrame.setResizable(false); 
+                        
+                        MatchWindow gamePanel = new MatchWindow(newW, newH);
+                        gameFrame.add(gamePanel);
+                        
+                        // Garante que o layout BorderLayout calcule o tamanho correto sem cortar a base
+                        gamePanel.setPreferredSize(new Dimension(newW, newH));
+                        gameFrame.pack();
+                        
+                        gameFrame.setLocationRelativeTo(null);
+                        gameFrame.setVisible(true);
+                        gamePanel.startGameSetup();
+                    });
+                };
+
+                //  Abre a Janela do Menu novamente
+                SwingUtilities.invokeLater(() -> {
+                    JFrame menuFrame = new JFrame("A Generic Card Game - Menu Principal");
+                    menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    menuFrame.setResizable(false);
+                    
+                    // Adiciona o menu recriado
+                    menuFrame.add(new HomeMenu_GraphicWindow(sizes, starter));
+                    
+                    // Ajusta o tamanho e exibe
+                    menuFrame.getContentPane().setPreferredSize(new Dimension(w, h));
+                    menuFrame.pack();
+                    menuFrame.setLocationRelativeTo(null);
+                    menuFrame.setVisible(true);
+                });
             }
         });
-        
-        
     }
     
     private void initializeHandPanel(int w, int h) {
