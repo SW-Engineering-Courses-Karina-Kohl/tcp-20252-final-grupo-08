@@ -1,19 +1,15 @@
-// COMANDO PARA RODAR MATCHWINDOW ISOLADAMENTE (REMOVER DEPOIS) (Executar na src):
-// javac Domain/*.java Graphical_Interfaces/*.java ; java Graphical_Interfaces.MatchWindow
+
 
 package Graphical_Interfaces;
 
 import Domain.Card;
 import Domain.GameAction;
 import Domain.MonsterCard;
-import javax.swing.*;
+import static Graphical_Interfaces.Colors.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static Graphical_Interfaces.Colors.*; 
-import Graphical_Interfaces.CardWidget;
-import Graphical_Interfaces.RoundedButton;
+import javax.swing.*;
 
 
 // Implementa o Listener do CardWidget para saber quando uma carta foi clicada 
@@ -166,22 +162,5 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     public void startGameSetup() {
         System.out.println("Partida iniciada. Lógica de turno aqui...");
     }
-
-    /* Método main temporário para teste isolado (REMOVER APÓS INTEGRAÇÃO COM O MENU PRINCIPAL*/
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Teste Isolado da MatchWindow (Modo Jogo)");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        int w = 1000;
-        int h = 700;
-        
-        MatchWindow gamePanel = new MatchWindow(w, h);
-        
-        frame.add(gamePanel);
-        frame.setSize(w, h);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        
-        gamePanel.startGameSetup(); 
-    }
 }
+

@@ -1,10 +1,10 @@
 package Graphical_Interfaces;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
+import javax.swing.*;
 
 public class OptionsMenu_GraphicWindow extends JPanel {
 
@@ -137,7 +137,7 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                containerManager.ajustar(getWidth(), getHeight());
+                containerManager.ajust(getWidth(), getHeight());
             }
         });
 

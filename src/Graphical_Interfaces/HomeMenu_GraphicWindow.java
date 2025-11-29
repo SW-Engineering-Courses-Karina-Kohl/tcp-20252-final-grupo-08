@@ -1,12 +1,11 @@
 package Graphical_Interfaces;
 
-import javax.swing.*;
+import static Graphical_Interfaces.RoundedButton.setButtonSize;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-
-import static Graphical_Interfaces.RoundedButton.setButtonSize;
+import javax.swing.*;
 
 public class HomeMenu_GraphicWindow extends JPanel {
 
@@ -18,9 +17,11 @@ public class HomeMenu_GraphicWindow extends JPanel {
     private int buttonHeight;
 
     private ContainerManager containerManager; // <<< nova classe
+    private GameStartListener gameStartListener;// <<< nova classe para integração (matchwindow+homemenu)
 
-    public HomeMenu_GraphicWindow(ArrayList<Object[]> sizes) {
+    public HomeMenu_GraphicWindow(ArrayList<Object[]> sizes, GameStartListener listener) {
 
+        this.gameStartListener = listener; // (Incializa GameListener)
         Object[] first = sizes.get(0);
 
         int windowsWidth = (int) first[0];
@@ -71,11 +72,24 @@ public class HomeMenu_GraphicWindow extends JPanel {
 
         add(container);
 
+        startButton.addActionListener(e -> { //Actionlistener para ação do botão
+            if (gameStartListener != null) {
+                // 1. Dispara a ação de iniciar o jogo, que criará o MatchWindow.
+                gameStartListener.onStartGame(getWidth(), getHeight());
+                
+                // 2. Fecha o JFrame que contém este painel do menu.
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                if (frame != null) {
+                    frame.dispose();
+                }
+            }
+        });
+
         // Reagir ao redimensionamento da janela
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                containerManager.ajustar(getWidth(), getHeight());
+                containerManager.ajust(getWidth(), getHeight());
             }
         });
 
@@ -124,7 +138,7 @@ public class HomeMenu_GraphicWindow extends JPanel {
     }
 
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         int width = 640;
         int height = 480;
         String actualScale = new String("640p");
@@ -144,4 +158,6 @@ public class HomeMenu_GraphicWindow extends JPanel {
             frame.setVisible(true);
         });
     }
+    */
 }
+    

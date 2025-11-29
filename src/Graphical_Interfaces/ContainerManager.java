@@ -1,7 +1,6 @@
 package Graphical_Interfaces;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class ContainerManager {
 

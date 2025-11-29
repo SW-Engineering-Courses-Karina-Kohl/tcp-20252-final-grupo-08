@@ -34,7 +34,7 @@ public final class MonsterCard implements Card {
         
         List<GameAction> actions = new ArrayList<>();
         
-        // Ação 1
+        // Ação 1 
         actions.add(new GameAction() {
             @Override
             public String getLabel() { return "Ação 1"; }
