@@ -1,12 +1,12 @@
-
-
 package Graphical_Interfaces;
 
 import Domain.Card;
+import Domain.CardFactory;
 import Domain.GameAction;
 import Domain.MonsterCard;
 import static Graphical_Interfaces.Colors.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -130,9 +130,9 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private void loadMockHand() {
         List<Card> mockCards = new ArrayList<>();
 
-        mockCards.add(new MonsterCard()); 
-        mockCards.add(new MonsterCard());
-        mockCards.add(new MonsterCard());
+        mockCards.add(CardFactory.createSwordsman());
+        mockCards.add(CardFactory.createFireball());
+        mockCards.add(CardFactory.createHealing());
 
         //Arruma o tamanho das cartas na janela
         int panelHeight = handPanel.getHeight();
@@ -165,12 +165,21 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         handPanel.setEnabled(false);
         inspectionPanel.setVisible(true); 
         
-        
+        inspectionPanel.add(Box.createVerticalStrut(20));
+        JLabel imageLabel = createCardImageLabel(card); 
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inspectionPanel.add(imageLabel);
+
         //Adiciona Título e Descrição
+        inspectionPanel.add(Box.createVerticalStrut(15));
         JLabel title = new JLabel(card.getName());
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setFont(new Font("Serif", Font.BOLD, 24));
         title.setForeground(TEXT_OPTION_BUTTON);
+        inspectionPanel.add(title);
+        
+        inspectionPanel.add(Box.createVerticalStrut(10));
+        inspectionPanel.add(createStatsPanel(card));
 
         JTextArea desc = new JTextArea(card.getDescription());
         desc.setEditable(false);
@@ -178,9 +187,8 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         desc.setWrapStyleWord(true);
         desc.setOpaque(false);
         desc.setForeground(TEXT_OPTION_BUTTON);
+        desc.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        inspectionPanel.add(Box.createVerticalStrut(20));
-        inspectionPanel.add(title);
         inspectionPanel.add(Box.createVerticalStrut(10));
         inspectionPanel.add(desc);
         
@@ -213,6 +221,44 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         repaint();
     }
     
+    private JPanel createStatsPanel(Card card) {
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        statsPanel.setOpaque(false);
+
+        String typeLabel = (card.getType() == Domain.CardType.MONSTER) ? "TROPA" : "FEITIÇO";
+        statsPanel.add(createStatLabel(typeLabel, Color.LIGHT_GRAY));
+
+        statsPanel.add(createStatLabel("Custo: " + card.getCost(), new Color(255, 215, 0))); 
+
+        if (card instanceof MonsterCard) {
+            MonsterCard monster = (MonsterCard) card;
+            statsPanel.add(createStatLabel("ATK: " + monster.getAttack(), new Color(255, 100, 100))); 
+            statsPanel.add(createStatLabel("DEF: " + monster.getDefense(), new Color(100, 149, 237))); 
+        }
+        return statsPanel;
+    }
+    
+    private JLabel createStatLabel(String text, Color color) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Monospaced", Font.BOLD, 14));
+        label.setForeground(color);
+        return label;
+    }
+
+    private JLabel createCardImageLabel(Card card) {
+        URL imageUrl = getClass().getResource(card.getImagePath());
+        if (imageUrl == null) {
+            imageUrl = getClass().getResource("/resources/placeholder.png");
+        }
+        
+        if (imageUrl != null) {
+            ImageIcon icon = new ImageIcon(imageUrl);
+            Image img = icon.getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH);
+            return new JLabel(new ImageIcon(img));
+        }
+        return new JLabel("[Imagem não encontrada]");
+    }
+    
     private void closeInspection() {
         inspectionPanel.setVisible(false);
         handPanel.setEnabled(true);
@@ -223,4 +269,3 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         System.out.println("Partida iniciada. Lógica de turno aqui...");
     }
 }
-

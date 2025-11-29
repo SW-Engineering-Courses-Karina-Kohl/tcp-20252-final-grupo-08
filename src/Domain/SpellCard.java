@@ -3,27 +3,23 @@ package Domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonsterCard implements Card {
+public class SpellCard implements Card {
     
     private final String name;
     private final String description;
     private final String imagePath;
     private final int cost;
-    private final int attack;
-    private final int defense;
 
-    public MonsterCard(String name, String description, String imagePath, int cost, int attack, int defense) {
+    public SpellCard(String name, String description, String imagePath, int cost) {
         this.name = name;
-        this.description = (description == null || description.isEmpty()) ? "None" : description;
+        this.description = description; 
         this.imagePath = imagePath;
         this.cost = cost;
-        this.attack = attack;
-        this.defense = defense;
     }
 
     @Override
     public CardType getType() {
-        return CardType.MONSTER;
+        return CardType.SPELL;
     }
 
     @Override
@@ -44,14 +40,6 @@ public class MonsterCard implements Card {
     @Override
     public int getCost() {
         return cost;
-    }
-
-    public int getAttack() {
-        return attack;
-    }
-
-    public int getDefense() {
-        return defense;
     }
 
     @Override

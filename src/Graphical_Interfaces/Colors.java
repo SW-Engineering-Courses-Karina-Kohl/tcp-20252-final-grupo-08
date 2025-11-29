@@ -13,4 +13,6 @@ public final class Colors {
     public static final Color TEXT_BUTTON = new Color(0, 0, 0);
     public static final Color TEXT_OPTION_BUTTON = new Color(232,232,232);
     public static final Color TEXT_END_GAME_BUTTON = new Color(232, 232, 232);
+    public static final Color MONSTER_COLOR = new Color(0, 0, 168);
+    public static final Color SPELL_COLOR = new Color(128, 0, 128);
 }

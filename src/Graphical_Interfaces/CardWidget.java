@@ -20,12 +20,21 @@ public class CardWidget extends JPanel {
     public CardWidget(Card card, int width, int height, OnCardClickListener listener) {
         this.cardData = card;
         setPreferredSize(new Dimension(width, height));
-        setBackground(Colors.GENERAL_BUTTON);
-        setBorder(BorderFactory.createLineBorder(Colors.TEXT_BUTTON, 2));
+        
+        Color cardColor = (card.getType() == Domain.CardType.MONSTER) 
+                            ? Colors.MONSTER_COLOR 
+                            : Colors.SPELL_COLOR;
+        
+        setBackground(cardColor);
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         setLayout(new BorderLayout()); 
 
-        URL imageUrl = getClass().getResource("/resources/placeholder.png"); 
+        URL imageUrl = getClass().getResource(card.getImagePath()); 
     
+        if (imageUrl == null) {
+            imageUrl = getClass().getResource("/resources/placeholder.png");
+        }
+
         if (imageUrl != null) {
             this.cardImage = new ImageIcon(imageUrl).getImage();
         } else {
@@ -73,9 +82,9 @@ public class CardWidget extends JPanel {
 
         // Desenho e feedback visual
         if (isHovered) {
-            g2d.setColor(Colors.GENERAL_BUTTON.brighter());
+            g2d.setColor(getBackground().brighter());
         } else {
-            g2d.setColor(Colors.GENERAL_BUTTON);
+            g2d.setColor(getBackground());
         }
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
