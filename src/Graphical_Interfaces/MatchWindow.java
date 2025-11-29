@@ -19,7 +19,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private JPanel inspectionPanel;   // Painel de Zoom 
     
     public MatchWindow(int width, int height) {
-        setLayout(null); 
+        setLayout(new BorderLayout());
         setSize(width, height);
         setBackground(GENERAL_BACKGROUND.darker());
         
@@ -34,8 +34,13 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         RoundedButton exitButton = new RoundedButton("Encerrar Partida", 15);
         exitButton.setBackground(END_GAME_BUTTON);
         exitButton.setForeground(TEXT_END_GAME_BUTTON);
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setOpaque(false);
+        topPanel.add(exitButton);
         
-        exitButton.setBounds(10, 10, 180, 40); 
+        add(topPanel, BorderLayout.NORTH);
+        
+        
         
         exitButton.addActionListener(e -> {
             // Lógica de sair 
@@ -46,18 +51,18 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
             }
         });
         
-        add(exitButton);
+        
     }
     
     private void initializeHandPanel(int w, int h) {
         handPanel = new JPanel();
-        int handHeight = (int)(h * 0.25);
+        int handHeight = (int)(h * 0.35);
         
-        handPanel.setBounds(0, h - handHeight, w, handHeight);
+        handPanel.setPreferredSize(new Dimension(w, handHeight));
         handPanel.setBackground(new Color(0, 0, 0, 80)); 
         handPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
         
-        add(handPanel);
+        add(handPanel, BorderLayout.SOUTH);
         loadMockHand();
     }
     
@@ -79,13 +84,23 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
 
     private void loadMockHand() {
         List<Card> mockCards = new ArrayList<>();
+
         mockCards.add(new MonsterCard()); 
         mockCards.add(new MonsterCard());
         mockCards.add(new MonsterCard());
 
+        //Arruma o tamanho das cartas na janela
+        int panelHeight = handPanel.getHeight();
+        if (panelHeight == 0) {
+            panelHeight = handPanel.getPreferredSize().height;
+        }
+
+        int margin = 35; 
+        int cardHeight = panelHeight - margin;
+        int cardWidth = (int)(cardHeight * 0.66);
         for (Card card : mockCards) {
             
-            CardWidget widget = new CardWidget(card, 120, 180, this); 
+            CardWidget widget = new CardWidget(card, cardWidth, cardHeight, this); 
             handPanel.add(widget);
         }
         handPanel.revalidate();

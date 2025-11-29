@@ -1,10 +1,10 @@
 package Graphical_Interfaces;
 
 import Domain.Card;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.*;
 
 public class CardWidget extends JPanel {
     private final Card cardData;
@@ -20,6 +20,16 @@ public class CardWidget extends JPanel {
         setPreferredSize(new Dimension(width, height));
         setBackground(Colors.GENERAL_BUTTON);
         setBorder(BorderFactory.createLineBorder(Colors.TEXT_BUTTON, 2));
+        setLayout(new BorderLayout()); 
+        
+        //Texto em html para não ficar cortado
+        JLabel nameLabel = new JLabel("<html><center>" + card.getName() + "</center></html>");
+        nameLabel.setForeground(Colors.TEXT_BUTTON);
+        nameLabel.setFont(new Font("Serif", Font.BOLD, 14));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 0, 2));
+        add(nameLabel, BorderLayout.NORTH);
 
         //Integração do Mouse para clique e feedback visual da seleção de cartas
         addMouseListener(new MouseAdapter() {
@@ -59,8 +69,6 @@ public class CardWidget extends JPanel {
         }
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
-        g2d.setColor(Colors.TEXT_BUTTON);
-        g2d.setFont(new Font("Serif", Font.BOLD, 12));
-        g2d.drawString(cardData.getName(), 10, 20); 
+
     }
 }
