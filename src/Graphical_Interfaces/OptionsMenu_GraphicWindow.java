@@ -5,6 +5,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import javax.swing.*;
+import utils.Colors;
 
 public class OptionsMenu_GraphicWindow extends JPanel {
 

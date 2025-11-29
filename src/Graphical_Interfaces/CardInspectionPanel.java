@@ -3,6 +3,8 @@ package Graphical_Interfaces;
 import Domain.Card;
 import Domain.GameAction;
 import Domain.MonsterCard;
+import utils.Colors;
+
 import java.awt.*;
 import java.net.URL;
 import javax.swing.*;

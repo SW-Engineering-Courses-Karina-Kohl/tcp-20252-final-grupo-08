@@ -1,4 +1,4 @@
-package Graphical_Interfaces;
+package utils;
 
 @FunctionalInterface
 public interface GameStartListener {

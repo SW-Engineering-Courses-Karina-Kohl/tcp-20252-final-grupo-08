@@ -8,6 +8,8 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import utils.Colors;
+import utils.GameStartListener;
 
 public class MatchWindow extends JPanel implements CardWidget.OnCardClickListener {
 

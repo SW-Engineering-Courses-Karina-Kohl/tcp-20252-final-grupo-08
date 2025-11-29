@@ -1,4 +1,4 @@
-package Graphical_Interfaces;
+package utils;
 
 import java.awt.*;
 
