@@ -1,22 +1,12 @@
 package Domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MonsterCard implements Card {
+public class MonsterCard extends AbstractCard {
     
-    private final String name;
-    private final String description;
-    private final String imagePath;
-    private final int cost;
     private final int attack;
     private final int defense;
 
     public MonsterCard(String name, String description, String imagePath, int cost, int attack, int defense) {
-        this.name = name;
-        this.description = (description == null || description.isEmpty()) ? "None" : description;
-        this.imagePath = imagePath;
-        this.cost = cost;
+        super(name, description, imagePath, cost);
         this.attack = attack;
         this.defense = defense;
     }
@@ -26,36 +16,11 @@ public class MonsterCard implements Card {
         return CardType.MONSTER;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    @Override
-    public int getCost() {
-        return cost;
-    }
-
     public int getAttack() {
         return attack;
     }
 
     public int getDefense() {
         return defense;
-    }
-
-    @Override
-    public List<GameAction> getAvailableActions() {
-        return new ArrayList<>();
     }
 }
