@@ -1,8 +1,12 @@
+import Domain.Card;
+import Domain.DeckFactory;
+import Domain.Player;
 import Graphical_Interfaces.HomeMenu_GraphicWindow;
 import Graphical_Interfaces.MatchWindow;
 import Sounds.GlobalMusic;
 import Sounds.MusicPlayer;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 import utils.EnumerateScales;
@@ -24,11 +28,17 @@ public class A_Generic_Card_Game {
 
         GameStartListener starter = (w, h) -> {
             SwingUtilities.invokeLater(() -> {
+                
+                List<Card> playerDeck = DeckFactory.createRandomDeck(20);
+                Player player = new Player("Hero", 2000, playerDeck);
+                
+                List<Card> enemyDeck = DeckFactory.createRandomDeck(20);
+                Player enemy = new Player("Enemy", 2000, enemyDeck);
+
                 JFrame gameFrame = new JFrame("A Generic Card Game - Partida");
                 gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-                
-                MatchWindow gamePanel = new MatchWindow(sizes);
+                MatchWindow gamePanel = new MatchWindow(sizes, player, enemy);
                 
                 gameFrame.add(gamePanel);
                 gameFrame.setSize(w, h);
@@ -47,13 +57,10 @@ public class A_Generic_Card_Game {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("A Generic Card Game - Menu Principal");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            frame.add(new HomeMenu_GraphicWindow(sizes, starter)); //Alterado para integração com MatchWindow
-
+            frame.add(new HomeMenu_GraphicWindow(sizes, starter)); 
             frame.setSize(width, height);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
-
     }
 }
