@@ -74,6 +74,18 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         if (handPanel != null) {
             int handH = (int)(h * HAND_PANEL_HEIGHT_RATIO);
             handPanel.setPreferredSize(new Dimension(w, handH));
+
+            int cardHeight = handH - HAND_MARGIN;
+            int cardWidth = (int)(cardHeight * CARD_WIDTH_RATIO);
+            Dimension cardSize = new Dimension(cardWidth, cardHeight);
+
+            for (Component comp : handPanel.getComponents()) {
+                if (comp instanceof CardWidget) {
+                    comp.setPreferredSize(cardSize);
+                    comp.revalidate();
+                }
+            }
+
             handPanel.revalidate();
         }
     }

@@ -17,10 +17,11 @@ public class HomeMenu_GraphicWindow extends JPanel {
 
     private final ContainerManager containerManager;
     private final GameStartListener gameStartListener;
+    private final JPanel container; // Tornar atributo para revalidar
 
     public HomeMenu_GraphicWindow(ArrayList<Object[]> sizes, GameStartListener listener) {
 
-        this.gameStartListener = listener; // (Incializa GameListener)
+        this.gameStartListener = listener;
 
         int windowsWidth = 640;
         int windowsHeight = 480;
@@ -28,10 +29,10 @@ public class HomeMenu_GraphicWindow extends JPanel {
         int buttonWidth = (int) (windowsWidth * 0.22);
         int buttonHeight = (int) (windowsHeight * 0.07);
 
-        setLayout(null); // container será posicionado manualmente
+        setLayout(null); 
 
         // ========== CONTAINER INTERNO ==========
-        JPanel container = new JPanel();
+        container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
 
@@ -77,10 +78,8 @@ public class HomeMenu_GraphicWindow extends JPanel {
             int height = (int) first[1];
 
             if (gameStartListener != null) {
-                // 1. Dispara a ação de iniciar o jogo, que criará o MatchWindow.
                 gameStartListener.onStartGame(width, height);
                 
-                // 2. Fecha o JFrame que contém este painel do menu.
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
                 if (frame != null) {
                     frame.dispose();
@@ -92,15 +91,17 @@ public class HomeMenu_GraphicWindow extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                containerManager.ajust(getWidth(), getHeight());
+                int w = getWidth();
+                int h = getHeight();
+                containerManager.ajust(w, h);
+                updateButtonSizes(w, h);
+                container.revalidate();
             }
         });
 
         optionsButton.addActionListener(e -> {
-            // Cria o painel da nova tela
             OptionsMenu_GraphicWindow op = new OptionsMenu_GraphicWindow(sizes);
 
-            // Cria janela sobreposta
             JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "A Generic Card Game - Opções", false);
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setSize(800, 600);
@@ -109,6 +110,13 @@ public class HomeMenu_GraphicWindow extends JPanel {
             dialog.setVisible(true);
         });
 
+    }
+    
+    private void updateButtonSizes(int w, int h) {
+        int buttonWidth = (int) (w * 0.22);
+        int buttonHeight = (int) (h * 0.07);
+        setButtonSize(startButton, buttonWidth, buttonHeight);
+        setButtonSize(optionsButton, buttonWidth, buttonHeight);
     }
 
     @Override
@@ -140,4 +148,3 @@ public class HomeMenu_GraphicWindow extends JPanel {
         button.addActionListener(e -> action.run());
     }
 }
-    

@@ -1,12 +1,11 @@
 package Graphical_Interfaces;
 
+import Sounds.GlobalMusic;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import javax.swing.*;
-
-import Sounds.GlobalMusic;
 import utils.Colors;
 import utils.EnumerateScales;
 import utils.EnumerateSounds;
@@ -26,7 +25,7 @@ public class OptionsMenu_GraphicWindow extends JPanel {
     private String actualScale;
     private String actualSound;
 
-    private final ContainerManager containerManager;  // <<< Gerenciador do container
+    private final ContainerManager containerManager;  
 
     public OptionsMenu_GraphicWindow(ArrayList<Object[]> sizes) {
 
@@ -160,6 +159,13 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         int height = scale.getHeight();
 
         sizes.set(0, new Object[] { width, height, actualScale, first[3] });
+
+        for (Window w : Window.getWindows()) {
+            if (w instanceof JFrame && w.isVisible()) {
+                w.setSize(width, height);
+                w.setLocationRelativeTo(null);
+            }
+        }
     }
 
     private void updateSound(ArrayList<Object[]> sizes, String actualSound) {

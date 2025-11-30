@@ -14,6 +14,8 @@ public class PauseWindow extends JPanel {
     private final JLabel title;
 
     private final JButton resumeButton;
+    private final JButton optionsButton; 
+    private final JButton menuButton;    
 
     private static final String TXT_CONFIRM_TITLE = "Sair";
     private static final String TXT_CONFIRM_MSG = "Deseja voltar ao menu principal?";
@@ -60,16 +62,14 @@ public class PauseWindow extends JPanel {
             }
         });
 
-        add(resumeButton);
-
         // Botão Options
-        JButton optionsButton = new RoundedButton("Options", 20);
+        optionsButton = new RoundedButton("Options", 20);
         optionsButton.setBackground(Colors.GENERAL_BUTTON);
         optionsButton.setForeground(Colors.TEXT_BUTTON);
         RoundedButton.setButtonSize(optionsButton, buttonWidth, buttonHeight);
 
         // Botão Main Menu
-        JButton menuButton = new RoundedButton("Main Menu", 20);
+        menuButton = new RoundedButton("Main Menu", 20);
         menuButton.setBackground(Colors.GENERAL_BUTTON);
         menuButton.setForeground(Colors.TEXT_BUTTON);
         RoundedButton.setButtonSize(menuButton, buttonWidth, buttonHeight);
@@ -130,19 +130,22 @@ public class PauseWindow extends JPanel {
                 int w = getWidth();
                 int h = getHeight();
 
-                int cw = container.getPreferredSize().width;
-                int ch = container.getPreferredSize().height;
-
-                container.setBounds(
-                        (w - cw) / 2,
-                        (h - ch) / 2,
-                        cw,
-                        ch
-                );
+                containerManager.ajust(w, h);
+                updateButtonSizes(w, h); // Atualiza tamanho físico dos botões
+                container.revalidate(); // Força o layout a reconhecer os novos tamanhos
             }
         });
 
 
+    }
+
+    private void updateButtonSizes(int w, int h) {
+        int buttonWidth = (int) (w * 0.42);
+        int buttonHeight = (int) (h * 0.1);
+        
+        RoundedButton.setButtonSize(resumeButton, buttonWidth, buttonHeight);
+        RoundedButton.setButtonSize(optionsButton, buttonWidth, buttonHeight);
+        RoundedButton.setButtonSize(menuButton, buttonWidth, buttonHeight);
     }
 
     private void menuGenerator(ArrayList<Object[]> sizes){
@@ -205,9 +208,12 @@ public class PauseWindow extends JPanel {
 
         int fontSizeTitle = base / 12;
         int fontSizeButton = base / 16;
+        Font fontButton = new Font("Serif", Font.BOLD, fontSizeButton);
 
         title.setFont(new Font("Serif", Font.BOLD, fontSizeTitle));
-        resumeButton.setFont(new Font("Serif", Font.BOLD, fontSizeButton));
+        resumeButton.setFont(fontButton);
+        optionsButton.setFont(fontButton);
+        menuButton.setFont(fontButton);
 
     }
 
