@@ -1,4 +1,4 @@
-public class CardLog {
+public class PlayerCardLog {
     private static final Logger logger = LogManager.getLogger(CardLog.class);
 
     public static void cardPlayed(String cardName) {
