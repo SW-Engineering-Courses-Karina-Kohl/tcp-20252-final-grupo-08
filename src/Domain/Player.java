@@ -33,6 +33,14 @@ public class Player {
 
     public int getMoney() { return money; }
 
+    public void addMoney(int amount) {
+        this.money += amount;
+    }
+
+    public void spendMoney(int amount) {
+        this.money -= amount;
+    }
+
     public List<Card> getDeck() { return deck; }
 
     public List<Card> getHand() { return hand; }
@@ -52,5 +60,4 @@ public class Player {
         }
         usedEffects.add(new AppliedEffect(effectName));
     }
-
 }

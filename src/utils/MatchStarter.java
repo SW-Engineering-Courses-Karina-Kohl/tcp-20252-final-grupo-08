@@ -2,6 +2,7 @@ package utils;
 
 import Domain.Card;
 import Domain.DeckFactory;
+import Domain.GameManager;
 import Domain.Player;
 import Graphical_Interfaces.MatchWindow;
 import java.awt.Dimension;
@@ -14,11 +15,9 @@ public class MatchStarter implements GameStartListener {
 
     private final ArrayList<Object[]> sizes;
     
-    // Configurações centralizadas
     private static final String PLAYER_NAME = "Jogador";
     private static final String ENEMY_NAME = "Oponente";
     private static final int INITIAL_HP = 2000;
-    private static final int DECK_SIZE = 20;
     private static final String WINDOW_TITLE_MATCH = "A Generic Card Game - Partida";
 
     public MatchStarter(ArrayList<Object[]> sizes) {
@@ -28,22 +27,27 @@ public class MatchStarter implements GameStartListener {
     @Override
     public void onStartGame(int width, int height) {
         SwingUtilities.invokeLater(() -> {
-            // 1. Criação dos Decks e Jogadores (Lógica de Domínio)
-            List<Card> pDeck = DeckFactory.createRandomDeck(DECK_SIZE);
+            //Criação dos Decks e Jogadores
+            List<Card> pDeck = DeckFactory.createStarterDeck();
             Player player = new Player(PLAYER_NAME, INITIAL_HP, pDeck);
 
-            List<Card> eDeck = DeckFactory.createRandomDeck(DECK_SIZE);
+            List<Card> eDeck = DeckFactory.createStarterDeck();
             Player enemy = new Player(ENEMY_NAME, INITIAL_HP, eDeck);
 
-            // 2. Criação da Janela (Lógica de UI)
+            //Criação da Janela
             JFrame gameFrame = createGameFrame(width, height);
             
-            // 3. Inicialização da Partida
             MatchWindow gamePanel = new MatchWindow(sizes, player, enemy);
+            
+            //Criação e injeção do GameManager
+            GameManager gameManager = new GameManager(player, enemy, gamePanel);
+            gamePanel.setGameManager(gameManager);
+
             gameFrame.add(gamePanel);
             gameFrame.setVisible(true);
 
             gamePanel.startGameSetup();
+            gameManager.startGame();
         });
     }
 

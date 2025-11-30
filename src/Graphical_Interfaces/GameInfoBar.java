@@ -8,14 +8,12 @@ import utils.Colors;
 
 public class GameInfoBar extends JPanel {
 
-    private static final int BAR_HEIGHT = 60;
+    private static final int BAR_HEIGHT = 110; 
     private static final Color BAR_BACKGROUND = new Color(0, 0, 0, 180);
-    private static final Font INFO_FONT = new Font("Serif", Font.BOLD, 16);
+    private static final Font INFO_FONT = new Font("SansSerif", Font.BOLD, 12);
     private static final Color TEXT_COLOR = Color.WHITE;
 
-    // Labels que precisam ser atualizados transformados em campos da classe
     private JLabel turnLabel;
-    private JLabel timeLabel;
     private JLabel enemyStatusLabel;
     private JLabel playerStatusLabel;
     private JLabel moneyLabel;
@@ -23,60 +21,65 @@ public class GameInfoBar extends JPanel {
     private final Player player;
     private final Player enemy;
 
-    public GameInfoBar(Player player, Player enemy, ActionListener onPauseAction) {
+    public GameInfoBar(Player player, Player enemy, ActionListener onPauseAction, ActionListener onEndTurnAction) {
         this.player = player;
         this.enemy = enemy;
 
-        setLayout(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10)); 
         setBackground(BAR_BACKGROUND);
-        setPreferredSize(new Dimension(800, BAR_HEIGHT)); 
+        setPreferredSize(new Dimension(0, BAR_HEIGHT)); 
 
         // --- Botão de Pause ---
-        RoundedButton pauseButton = new RoundedButton("Pause", 15);
+        RoundedButton pauseButton = new RoundedButton("Pause", 10);
+        pauseButton.setFont(new Font("SansSerif", Font.BOLD, 11)); 
         pauseButton.setBackground(Colors.OPTION_BUTTON);
         pauseButton.setForeground(Colors.TEXT_OPTION_BUTTON);
-        pauseButton.setPreferredSize(new Dimension(80, 30));
+        pauseButton.setPreferredSize(new Dimension(70, 25)); 
         pauseButton.addActionListener(onPauseAction);
         add(pauseButton);
+
+        // --- Botão de Passar Turno ---
+        RoundedButton endTurnButton = new RoundedButton("Passar", 10);
+        endTurnButton.setFont(new Font("SansSerif", Font.BOLD, 11));
+        endTurnButton.setBackground(new Color(200, 50, 50)); 
+        endTurnButton.setForeground(Color.WHITE);
+        endTurnButton.setPreferredSize(new Dimension(70, 25));
+        endTurnButton.addActionListener(onEndTurnAction);
+        add(endTurnButton);
 
         add(createSeparator());
 
         // --- Status do Jogo ---
         turnLabel = createLabel("Turno: 1");
         add(turnLabel);
-        
-        timeLabel = createLabel("Tempo: 00:00");
-        add(timeLabel);
 
         add(createSeparator());
 
         // --- Status do Inimigo ---
-        enemyStatusLabel = createLabel(""); // Texto definido no updateValues
+        enemyStatusLabel = createLabel(""); 
         add(enemyStatusLabel);
 
         add(createSeparator());
 
         // --- Status do Jogador ---
-        playerStatusLabel = createLabel(""); // Texto definido no updateValues
+        playerStatusLabel = createLabel(""); 
         add(playerStatusLabel);
         
-        // Exibe os recursos do jogador
+        add(createSeparator());
+
+        // --- Dinheiro ---
         moneyLabel = createLabel("");
-        moneyLabel.setForeground(new Color(255, 215, 0)); // Dourado
+        moneyLabel.setForeground(new Color(255, 215, 0)); 
         add(moneyLabel);
 
-        // Define os textos iniciais
-        updateValues();
+        updateValues(1); 
     }
 
-    // Método chamado para atualizar os textos na tela
-    public void updateValues() {
-        enemyStatusLabel.setText(enemy.getName() + ": " + enemy.getHealth() + " HP");
-        playerStatusLabel.setText(player.getName() + ": " + player.getHealth() + " HP");
-        moneyLabel.setText("$ " + player.getMoney());
-        
-        // Se tiver lógica de turno/tempo no Player, atualize aqui também
-        // turnLabel.setText("Turno: " + ...);
+    public void updateValues(int currentTurn) {
+        turnLabel.setText("Turno: " + currentTurn);
+        enemyStatusLabel.setText(enemy.getName() + ": " + enemy.getHealth());
+        playerStatusLabel.setText(player.getName() + ": " + player.getHealth());
+        moneyLabel.setText("$" + player.getMoney());
     }
 
     private JLabel createLabel(String text) {
@@ -90,18 +93,16 @@ public class GameInfoBar extends JPanel {
         JLabel sep = new JLabel("|");
         sep.setFont(INFO_FONT);
         sep.setForeground(Color.GRAY);
+        sep.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         return sep;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        // Garante que os valores estejam atualizados antes de desenhar
-        updateValues();
-        
+        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setColor(getBackground());
         g2d.fillRect(0, 0, getWidth(), getHeight());
         g2d.dispose();
-        super.paintComponent(g);
     }
 }
