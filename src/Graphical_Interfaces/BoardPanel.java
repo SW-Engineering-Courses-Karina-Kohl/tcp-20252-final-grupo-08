@@ -27,9 +27,14 @@ public class BoardPanel extends JPanel {
         removeAll();
 
         // Renderiza Inimigo (Slots superiores)
-        for (MonsterCard monster : enemyMonsters) {
+        for (int i = 0; i < enemyMonsters.size(); i++) {
+            MonsterCard monster = enemyMonsters.get(i);
             if (monster != null) {
-                add(new CardWidget(monster, 0, 0, cardListener));
+                if (isSelectionMode && slotListener != null) {
+                    add(createMonsterWidgetForSelection(monster, i, slotListener));
+                } else {
+                    add(new CardWidget(monster, 0, 0, cardListener));
+                }
             } else {
                 add(createEmptySlot(-1, false, null)); // Slot vazio inimigo
             }
@@ -39,7 +44,11 @@ public class BoardPanel extends JPanel {
         for (int i = 0; i < playerMonsters.size(); i++) {
             MonsterCard monster = playerMonsters.get(i);
             if (monster != null) {
-                add(new CardWidget(monster, 0, 0, cardListener));
+                if (isSelectionMode && slotListener != null) {
+                    add(createMonsterWidgetForSelection(monster, i, slotListener));
+                } else {
+                    add(new CardWidget(monster, 0, 0, cardListener));
+                }
             } else {
                 // Se estiver escolhendo onde jogar (isSelectionMode), o slot fica clicável
                 add(createEmptySlot(i, isSelectionMode, slotListener));
@@ -49,6 +58,15 @@ public class BoardPanel extends JPanel {
         revalidate();
         repaint();
     }
+
+    private JComponent createMonsterWidgetForSelection(MonsterCard monster, int index, OnSlotClickListener slotListener) {
+        CardWidget.OnCardClickListener listener = card -> {
+            if (slotListener != null) slotListener.onSlotClick(index);
+        };
+
+        return new CardWidget(monster, 0, 0, listener);
+    }
+
 
     private JPanel createEmptySlot(int index, boolean isClickable, OnSlotClickListener listener) {
         JPanel slot = new JPanel();

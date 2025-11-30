@@ -44,4 +44,12 @@ public class Board {
         }
         return Optional.empty();
     }
+
+    public void nextTurn() {
+        for (MonsterCard monster : monsters) {
+            if (monster != null) {
+                monster.updateStatsUses();
+            }
+        }
+    }
 }

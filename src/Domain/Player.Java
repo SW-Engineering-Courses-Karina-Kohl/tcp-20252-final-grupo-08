@@ -27,27 +27,30 @@ public class Player {
         }
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() {  return name; }
 
-    public int getHealth() {
-        return health;
-    }
+    public int getHealth() { return health; }
 
-    public int getMoney() {
-        return money;
-    }
+    public int getMoney() { return money; }
 
-    public List<Card> getDeck() {
-        return deck;
-    }
+    public List<Card> getDeck() { return deck; }
 
-    public List<Card> getHand() {
-        return hand;
-    }
+    public List<Card> getHand() { return hand; }
     
-    public Board getBoard() {
-        return board;
+    public Board getBoard() { return board; }
+
+    private List<AppliedEffect> usedEffects = new ArrayList<>();
+
+    public List<AppliedEffect> getUsedEffects() { return usedEffects; }
+
+    public void registerEffectUse(String effectName) {
+        for (AppliedEffect eff : usedEffects) {
+            if (eff.getEffectName().equals(effectName)) {
+                eff.increment();
+                return;
+            }
+        }
+        usedEffects.add(new AppliedEffect(effectName));
     }
+
 }

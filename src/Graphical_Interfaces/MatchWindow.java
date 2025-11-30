@@ -1,14 +1,14 @@
 package Graphical_Interfaces;
 
-import Domain.Card;
-import Domain.MonsterCard;
-import Domain.Player;
+import Domain.*;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import javax.swing.*;
+
 import utils.Colors;
 
 public class MatchWindow extends JPanel implements CardWidget.OnCardClickListener {
@@ -31,6 +31,8 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private final Player player;
     private final Player enemy;
     private Card pendingCard = null;
+    private Card pendingSpell = null;
+
 
     public MatchWindow(ArrayList<Object[]> sizes, Player player, Player enemy) {
         this.player = player;
@@ -74,32 +76,74 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     }
 
     private void prepareToPlaceCard(Card card) {
+
         if (card instanceof MonsterCard) {
             this.pendingCard = card;
-            refreshUI(); 
-        } else {
-            JOptionPane.showMessageDialog(this, "ainda não implementado.");
+            this.pendingSpell = null;
+            JOptionPane.showMessageDialog(this, "Escolha um espaço do campo para colocar o monstro.");
+            refreshUI();
+            return;
+        }
+
+        if (card instanceof SpellCard) {
+            this.pendingSpell = card;
+            this.pendingCard = null;
+
+            JOptionPane.showMessageDialog(this, "Escolha um monstro para aplicar o efeito.");
+            refreshUI();
         }
     }
 
+
     private void onBoardSlotClicked(int index) {
-        if (pendingCard != null && pendingCard instanceof MonsterCard) {
-            boolean success = player.getBoard().placeMonsterAt(index, (MonsterCard) pendingCard);
-            
+        if (pendingCard != null && pendingCard instanceof MonsterCard monster) {
+            boolean success = player.getBoard().placeMonsterAt(index, monster);
             if (success) {
-                player.getHand().remove(pendingCard);
+                player.getHand().remove(monster);
                 pendingCard = null;
                 refreshUI();
             } else {
                 JOptionPane.showMessageDialog(this, "Espaço ocupado!");
             }
+            return;
+        }
+
+        if (pendingSpell != null && pendingSpell instanceof SpellCard) {
+            var opt = player.getBoard().getMonsterAt(index);
+            if (opt.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nenhum monstro neste espaço!");
+                return;
+            }
+
+            MonsterCard target = opt.get();
+
+            applySpellToMonster(pendingSpell, target);
+
+            // remove spell da mão
+            player.getHand().remove(pendingSpell);
+            pendingSpell = null;
+
+            refreshUI();
         }
     }
 
+    private void applySpellToMonster(Card spell, MonsterCard target) {
+
+        switch(spell.getName()) {
+
+            case "Upgrade" -> SpellEffects.castUpgrade(player, target);
+            case "Cura" -> SpellEffects.castHeal(player, target);
+            case "Bola de Fogo" -> SpellEffects.castFireball(player, target);
+
+            default -> JOptionPane.showMessageDialog(this, "Spell sem efeito implementado!");
+        }
+    }
+
+
     private void refreshUI() {
         handPanel.updateHand(player.getHand(), this);
-        
-        boolean selectionMode = (pendingCard != null);
+
+        boolean selectionMode = (pendingCard != null) || (pendingSpell != null);
         boardPanel.updateBoard(
             enemy.getBoard().getMonsters(),
             player.getBoard().getMonsters(),
@@ -123,7 +167,17 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
 
         Consumer<Card> playAction = null;
         if (player.getHand().contains(card)) {
-            playAction = this::prepareToPlaceCard;
+            if (card instanceof MonsterCard) {
+                // Jogar monstro no tabuleiro
+                playAction = this::prepareToPlaceCard;
+
+            } else if (card.getType() == CardType.SPELL) {
+                // Usar spell → abrir seleção de alvo no Board
+                playAction = usedCard -> {
+                    pendingSpell = usedCard;  // <-- você provavelmente já tem pendingSpell
+                    refreshUI();              // deixa o tabuleiro em modo seleção
+                };
+            }
         }
 
         inspectionPanel = new CardInspectionPanel(card, this::closeInspection, playAction);

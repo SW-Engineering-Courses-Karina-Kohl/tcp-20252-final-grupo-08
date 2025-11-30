@@ -1,12 +1,18 @@
 package Graphical_Interfaces;
 
 import Domain.Card;
+import Domain.CardStatusIcons;
 import Domain.CardType;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import javax.swing.*;
+
+import java.util.List;
+import java.util.Map;
+
+import Domain.MonsterCard;
 import utils.Colors;
 
 public class CardWidget extends JPanel {
@@ -102,6 +108,39 @@ public class CardWidget extends JPanel {
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
         drawCardImage(g2d);
+
+        if (!(cardData instanceof MonsterCard monster)) return;
+
+        Map<String, Integer> effectCounts = monster.getEffectCounts();
+        if (effectCounts.isEmpty()) return;
+
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        int iconSize = 16;
+        int spacing   = 4;
+
+        int x = getWidth() - iconSize;
+        int y = 6;
+
+        for (var entry : effectCounts.entrySet()) {
+            String effect = entry.getKey();
+            int count = entry.getValue();
+
+            Image icon = CardStatusIcons.getIcon(effect);
+            if (icon != null) {
+                g2.drawImage(icon, x, y, iconSize, iconSize, null);
+
+                if (count > 1) {
+                    g2.setFont(getFont().deriveFont(Font.BOLD, 12f));
+                    g2.setColor(Color.WHITE);
+                    g2.drawString("" + count, x + 8, y + 14);
+                }
+
+                y += iconSize + spacing;
+            }
+        }
     }
 
     private void drawCardImage(Graphics2D g2d) {
