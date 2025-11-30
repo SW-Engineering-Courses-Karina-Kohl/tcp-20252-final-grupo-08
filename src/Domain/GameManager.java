@@ -38,7 +38,6 @@ public class GameManager {
         player.drawCard();  
         
         window.refreshUI();
-        JOptionPane.showMessageDialog(window, "Seu Turno! (Turno " + turnCount + ")");
     }
 
     public void endPlayerTurn() {
