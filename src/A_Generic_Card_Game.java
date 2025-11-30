@@ -8,7 +8,6 @@ import Sounds.MusicPlayer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-
 import utils.EnumerateScales;
 import utils.EnumerateSounds;
 import utils.GameStartListener;

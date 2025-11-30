@@ -7,50 +7,40 @@ import java.util.Optional;
 
 public class Board {
     
-    // Constantes para evitar "Magic Numbers"
     private static final int MAX_MONSTER_SLOTS = 5;
-    
-    // Lista interna privada para garantir encapsulamento
     private final List<MonsterCard> monsters;
 
     public Board() {
         this.monsters = new ArrayList<>(MAX_MONSTER_SLOTS);
-    }
-
-    /**
-     * Tenta adicionar um monstro ao tabuleiro.
-     * @param card A carta a ser jogada.
-     * @throws IllegalStateException se o tabuleiro estiver cheio.
-     */
-    public void placeMonster(MonsterCard card) {
-        if (isFull()) {
-            throw new IllegalStateException("O tabuleiro está cheio. Não é possível jogar mais monstros.");
+        // Inicializa com null para representar slots vazios
+        for (int i = 0; i < MAX_MONSTER_SLOTS; i++) {
+            monsters.add(null);
         }
-        monsters.add(card);
     }
 
-    public void removeMonster(MonsterCard card) {
-        monsters.remove(card);
+    public boolean placeMonsterAt(int index, MonsterCard card) {
+        if (index >= 0 && index < MAX_MONSTER_SLOTS) {
+            if (monsters.get(index) == null) {
+                monsters.set(index, card);
+                return true;
+            }
+        }
+        return false;
     }
 
-    public boolean addMonster(MonsterCard card) {
-            
-        return false; 
+    public void clear() {
+        for (int i = 0; i < MAX_MONSTER_SLOTS; i++) {
+            monsters.set(i, null);
+        }
     }
 
-    public boolean isFull() {
-        return monsters.size() >= MAX_MONSTER_SLOTS;
-    }
-
-    // Retorna uma lista imutável para impedir que classes externas (como a UI)
-    // modifica o estado do tabuleiro diretamente sem passar pelos métodos de regra.
     public List<MonsterCard> getMonsters() {
         return Collections.unmodifiableList(monsters);
     }
 
     public Optional<MonsterCard> getMonsterAt(int index) {
         if (index >= 0 && index < monsters.size()) {
-            return Optional.of(monsters.get(index));
+            return Optional.ofNullable(monsters.get(index));
         }
         return Optional.empty();
     }
