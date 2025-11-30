@@ -6,6 +6,7 @@ import java.util.List;
 public class Player {
     private String name;
     private int health;
+    private int money; 
     
     private List<Card> deck;
     private List<Card> hand;
@@ -16,7 +17,8 @@ public class Player {
         this.health = health;
         this.deck = deck;
         this.hand = new ArrayList<>();
-        this.board = new Board(); // Garante que o Board é criado
+        this.board = new Board();
+        this.money = 10; 
     }
 
     public void drawCard() {
@@ -25,12 +27,24 @@ public class Player {
         }
     }
 
-    public List<Card> getHand() {
-        return hand;
+    public String getName() {
+        return name;
     }
-    
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
     public List<Card> getDeck() {
         return deck;
+    }
+
+    public List<Card> getHand() {
+        return hand;
     }
     
     public Board getBoard() {

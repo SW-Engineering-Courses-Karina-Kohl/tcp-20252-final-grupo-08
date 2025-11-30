@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-import java.util.function.Consumer; 
+import java.util.function.Consumer;
 import javax.swing.*;
 import utils.Colors;
 
@@ -21,8 +21,10 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private final JLayeredPane layeredPane;
     private final JPanel gameContent;
     
+
     private final HandPanel handPanel;    
     private final BoardPanel boardPanel;  
+    private final GameInfoBar topBar; 
     
     private CardInspectionPanel inspectionPanel;
 
@@ -51,7 +53,9 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         gameContent.setOpaque(false);
         layeredPane.add(gameContent, JLayeredPane.DEFAULT_LAYER);
 
-        initializeTopBar(sizes);
+        //top bar da HUD
+        this.topBar = new GameInfoBar(player, enemy, e -> openPauseMenu(sizes));
+        gameContent.add(topBar, BorderLayout.NORTH);
 
         this.boardPanel = new BoardPanel();
         gameContent.add(boardPanel, BorderLayout.CENTER);
@@ -117,7 +121,6 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private void openInspection(Card card) {
         if (inspectionPanel != null) layeredPane.remove(inspectionPanel);
 
-        //Verifica se a carta está na mão. Se não, a ação é nula.
         Consumer<Card> playAction = null;
         if (player.getHand().contains(card)) {
             playAction = this::prepareToPlaceCard;
@@ -144,18 +147,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         gameContent.setEnabled(enabled);
         handPanel.setVisible(enabled);
         boardPanel.setVisible(enabled);
-    }
-
-    private void initializeTopBar(ArrayList<Object[]> sizes) {
-        RoundedButton pauseButton = new RoundedButton("Pause", 15);
-        pauseButton.setBackground(Colors.OPTION_BUTTON);
-        pauseButton.setForeground(Colors.TEXT_OPTION_BUTTON);
-        pauseButton.addActionListener(e -> openPauseMenu(sizes));
-
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        topPanel.setOpaque(false);
-        topPanel.add(pauseButton);
-        gameContent.add(topPanel, BorderLayout.NORTH);
+        topBar.setVisible(enabled); 
     }
 
     private void openPauseMenu(ArrayList<Object[]> sizes) {

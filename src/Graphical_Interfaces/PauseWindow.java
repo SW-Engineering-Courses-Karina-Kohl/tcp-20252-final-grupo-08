@@ -1,16 +1,13 @@
 package Graphical_Interfaces;
 
-import Domain.Card;
-import Domain.DeckFactory;
-import Domain.Player;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.*;
 import utils.Colors;
 import utils.GameStartListener;
+import utils.MatchStarter; // Importe a nova classe
 
 public class PauseWindow extends JPanel {
 
@@ -22,7 +19,6 @@ public class PauseWindow extends JPanel {
     private static final String TXT_CONFIRM_TITLE = "Sair";
     private static final String TXT_CONFIRM_MSG = "Deseja voltar ao menu principal?";
     private static final String WINDOW_TITLE_MENU = "A Generic Card Game - Menu Principal";
-    private static final String WINDOW_TITLE_MATCH = "A Generic Card Game - Partida";
 
     private final ContainerManager containerManager;
 
@@ -39,7 +35,7 @@ public class PauseWindow extends JPanel {
         container.setOpaque(false);
         containerManager = new ContainerManager(container);
 
-        title = new JLabel("A Generic Card Game!");
+        title = new JLabel("PAUSADO"); // Ajustei para PAUSADO que faz mais sentido aqui
         title.setForeground(Colors.TITLE_TEXT);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -111,25 +107,13 @@ public class PauseWindow extends JPanel {
         int confirm = JOptionPane.showConfirmDialog(this, TXT_CONFIRM_MSG, TXT_CONFIRM_TITLE, JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
+            // Fecha janelas abertas
             for (Window w : Window.getWindows()) {
                 if (w instanceof JFrame && w.isVisible()) w.dispose();
             }
 
-            GameStartListener starter = (newW, newH) -> SwingUtilities.invokeLater(() -> {
-                List<Card> pDeck = DeckFactory.createRandomDeck(20);
-                Player player = new Player("Hero", 2000, pDeck);
-                
-                List<Card> eDeck = DeckFactory.createRandomDeck(20);
-                Player enemy = new Player("Enemy", 2000, eDeck);
-
-                JFrame gameFrame = createGameFrame(newW, newH);
-                gameFrame.setVisible(true);
-                
-                MatchWindow gamePanel = new MatchWindow(sizes, player, enemy);
-                gameFrame.add(gamePanel);
-                
-                gamePanel.startGameSetup();
-            });
+            // CLEAN CODE: Usamos a classe dedicada, PauseWindow não sabe mais criar players
+            GameStartListener starter = new MatchStarter(sizes);
 
             SwingUtilities.invokeLater(() -> {
                 JFrame menuFrame = new JFrame(WINDOW_TITLE_MENU);
@@ -142,16 +126,6 @@ public class PauseWindow extends JPanel {
                 menuFrame.setVisible(true);
             });
         }
-    }
-
-    private JFrame createGameFrame(int w, int h) {
-        JFrame gameFrame = new JFrame(WINDOW_TITLE_MATCH);
-        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameFrame.setResizable(false);
-        gameFrame.setPreferredSize(new Dimension(w, h));
-        gameFrame.pack();
-        gameFrame.setLocationRelativeTo(null);
-        return gameFrame;
     }
 
     @Override
