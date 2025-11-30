@@ -1,5 +1,5 @@
 public class PlayerCardLog {
-    private static final Logger logger = LogManager.getLogger(CardLog.class);
+    private static final Logger logger = LogManager.getLogger(PlayerCardLog.class);
 
     public static void cardPlayed(String cardName) {
         logger.info("Jogador jogou a carta {}", cardName);
