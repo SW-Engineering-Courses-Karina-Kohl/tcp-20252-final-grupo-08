@@ -11,31 +11,27 @@ import utils.GameStartListener;
 
 public class HomeMenu_GraphicWindow extends JPanel {
 
-    private JPanel container;
-    private JLabel title;
-    private RoundedButton startButton;
-    private RoundedButton optionsButton;
-    private int buttonWidth;
-    private int buttonHeight;
+    private final JLabel title;
+    private final RoundedButton startButton;
+    private final RoundedButton optionsButton;
 
-    private ContainerManager containerManager; // <<< nova classe
-    private GameStartListener gameStartListener;// <<< nova classe para integração (matchwindow+homemenu)
+    private final ContainerManager containerManager;
+    private final GameStartListener gameStartListener;
 
     public HomeMenu_GraphicWindow(ArrayList<Object[]> sizes, GameStartListener listener) {
 
         this.gameStartListener = listener; // (Incializa GameListener)
-        Object[] first = sizes.get(0);
 
-        int windowsWidth = (int) first[0];
-        int windowsHeight = (int) first[1];
+        int windowsWidth = 640;
+        int windowsHeight = 480;
 
-        buttonWidth = (int)(windowsWidth * 0.22);
-        buttonHeight = (int)(windowsHeight * 0.07);
+        int buttonWidth = (int) (windowsWidth * 0.22);
+        int buttonHeight = (int) (windowsHeight * 0.07);
 
         setLayout(null); // container será posicionado manualmente
 
         // ========== CONTAINER INTERNO ==========
-        container = new JPanel();
+        JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
 
@@ -74,10 +70,15 @@ public class HomeMenu_GraphicWindow extends JPanel {
 
         add(container);
 
-        startButton.addActionListener(e -> { //Actionlistener para ação do botão
+        startButton.addActionListener(e -> {
+            Object[] first = sizes.getFirst();
+
+            int width = (int) first[0];
+            int height = (int) first[1];
+
             if (gameStartListener != null) {
                 // 1. Dispara a ação de iniciar o jogo, que criará o MatchWindow.
-                gameStartListener.onStartGame(getWidth(), getHeight());
+                gameStartListener.onStartGame(width, height);
                 
                 // 2. Fecha o JFrame que contém este painel do menu.
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -138,28 +139,5 @@ public class HomeMenu_GraphicWindow extends JPanel {
     private void setAction(JButton button, Runnable action) {
         button.addActionListener(e -> action.run());
     }
-
-
-    /*public static void main(String[] args) { //Necessário para integração MatchWindow
-        int width = 640;
-        int height = 480;
-        String actualScale = new String("640p");
-        String actualSound = new String("100%");
-
-        ArrayList<Object[]> sizes = new ArrayList<>();
-        sizes.add(new Object[] {width, height, actualScale, actualSound});
-
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Square com Container Interno");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            frame.add(new HomeMenu_GraphicWindow(sizes));
-
-            frame.setSize(width, height);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
-    }
-    */
 }
     
