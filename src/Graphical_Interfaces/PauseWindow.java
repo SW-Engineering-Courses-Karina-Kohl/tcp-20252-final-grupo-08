@@ -124,7 +124,13 @@ public class PauseWindow extends JPanel {
 
                 JFrame gameFrame = createGameFrame(newW, newH);
                 gameFrame.setVisible(true);
-                gameFrame.add(new MatchWindow(sizes, player, enemy));
+                
+                // CORREÇÃO AQUI: Criamos a referência para poder chamar o setup
+                MatchWindow gamePanel = new MatchWindow(sizes, player, enemy);
+                gameFrame.add(gamePanel);
+                
+                // CHAMA O SETUP INICIAL (COMPRA AS CARTAS)
+                gamePanel.startGameSetup();
             });
 
             SwingUtilities.invokeLater(() -> {
