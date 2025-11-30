@@ -1,5 +1,5 @@
 public class BotCardLog {
-    private static final Logger logger = LogManager.getLogger(CardLog.class);
+    private static final Logger logger = LogManager.getLogger(BotCardLog.class);
 
     public static void cardPlayed(String cardName) {
         logger.info("Bot jogou a carta {}", cardName);
