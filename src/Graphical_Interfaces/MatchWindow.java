@@ -1,14 +1,12 @@
 package Graphical_Interfaces;
 
 import Domain.*;
-
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import javax.swing.*;
-
 import utils.Colors;
 
 public class MatchWindow extends JPanel implements CardWidget.OnCardClickListener {
@@ -21,7 +19,6 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private final JLayeredPane layeredPane;
     private final JPanel gameContent;
     
-
     private final HandPanel handPanel;    
     private final BoardPanel boardPanel;  
     private final GameInfoBar topBar; 
@@ -30,9 +27,11 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
 
     private final Player player;
     private final Player enemy;
+    
     private Card pendingCard = null;
     private Card pendingSpell = null;
 
+    private GameManager gameManager; 
 
     public MatchWindow(ArrayList<Object[]> sizes, Player player, Player enemy) {
         this.player = player;
@@ -55,8 +54,14 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         gameContent.setOpaque(false);
         layeredPane.add(gameContent, JLayeredPane.DEFAULT_LAYER);
 
-        //top bar da HUD
-        this.topBar = new GameInfoBar(player, enemy, e -> openPauseMenu(sizes));
+        this.topBar = new GameInfoBar(
+            player, 
+            enemy, 
+            e -> openPauseMenu(sizes),
+            e -> {
+                if (gameManager != null) gameManager.endPlayerTurn();
+            }
+        );
         gameContent.add(topBar, BorderLayout.NORTH);
 
         this.boardPanel = new BoardPanel();
@@ -75,7 +80,20 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         refreshUI();
     }
 
+    public void setGameManager(GameManager gameManager) {
+        this.gameManager = gameManager;
+    }
+
     private void prepareToPlaceCard(Card card) {
+        if (gameManager != null && !gameManager.isPlayerTurn()) {
+            JOptionPane.showMessageDialog(this, "Aguarde seu turno!");
+            return;
+        }
+        
+        if (player.getMoney() < card.getCost()) {
+            JOptionPane.showMessageDialog(this, "Dinheiro insuficiente!");
+            return;
+        }
 
         if (card instanceof MonsterCard) {
             this.pendingCard = card;
@@ -88,17 +106,16 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         if (card instanceof SpellCard) {
             this.pendingSpell = card;
             this.pendingCard = null;
-
             JOptionPane.showMessageDialog(this, "Escolha um monstro para aplicar o efeito.");
             refreshUI();
         }
     }
 
-
     private void onBoardSlotClicked(int index) {
         if (pendingCard != null && pendingCard instanceof MonsterCard monster) {
             boolean success = player.getBoard().placeMonsterAt(index, monster);
             if (success) {
+                player.spendMoney(monster.getCost());
                 player.getHand().remove(monster);
                 pendingCard = null;
                 refreshUI();
@@ -116,34 +133,29 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
             }
 
             MonsterCard target = opt.get();
-
             applySpellToMonster(pendingSpell, target);
 
-            // remove spell da mão
+            player.spendMoney(pendingSpell.getCost());
             player.getHand().remove(pendingSpell);
             pendingSpell = null;
-
             refreshUI();
         }
     }
 
     private void applySpellToMonster(Card spell, MonsterCard target) {
-
         switch(spell.getName()) {
-
             case "Upgrade" -> SpellEffects.castUpgrade(player, target);
             case "Cura" -> SpellEffects.castHeal(player, target);
             case "Bola de Fogo" -> SpellEffects.castFireball(player, target);
-
             default -> JOptionPane.showMessageDialog(this, "Spell sem efeito implementado!");
         }
     }
 
-
-    private void refreshUI() {
+    public void refreshUI() {
         handPanel.updateHand(player.getHand(), this);
 
         boolean selectionMode = (pendingCard != null) || (pendingSpell != null);
+        
         boardPanel.updateBoard(
             enemy.getBoard().getMonsters(),
             player.getBoard().getMonsters(),
@@ -151,12 +163,20 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
             this::onBoardSlotClicked, 
             selectionMode
         );
+        
+        if (gameManager != null) {
+            topBar.updateValues(gameManager.getTurnCount());
+        } else {
+            topBar.updateValues(1);
+        }
+        topBar.repaint();
     }
 
     @Override
     public void onCardClicked(Card card) {
-        if (pendingCard != null) {
-            pendingCard = null; 
+        if (pendingCard != null || pendingSpell != null) {
+            pendingCard = null;
+            pendingSpell = null;
             refreshUI();
         }
         openInspection(card);
@@ -166,18 +186,9 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         if (inspectionPanel != null) layeredPane.remove(inspectionPanel);
 
         Consumer<Card> playAction = null;
+        
         if (player.getHand().contains(card)) {
-            if (card instanceof MonsterCard) {
-                // Jogar monstro no tabuleiro
-                playAction = this::prepareToPlaceCard;
-
-            } else if (card.getType() == CardType.SPELL) {
-                // Usar spell → abrir seleção de alvo no Board
-                playAction = usedCard -> {
-                    pendingSpell = usedCard;  // <-- você provavelmente já tem pendingSpell
-                    refreshUI();              // deixa o tabuleiro em modo seleção
-                };
-            }
+            playAction = this::prepareToPlaceCard;
         }
 
         inspectionPanel = new CardInspectionPanel(card, this::closeInspection, playAction);

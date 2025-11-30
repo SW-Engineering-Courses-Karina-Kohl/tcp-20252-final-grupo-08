@@ -3,16 +3,13 @@ package Graphical_Interfaces;
 import Domain.Card;
 import Domain.CardStatusIcons;
 import Domain.CardType;
+import Domain.MonsterCard;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import javax.swing.*;
-
-import java.util.List;
 import java.util.Map;
-
-import Domain.MonsterCard;
+import javax.swing.*;
 import utils.Colors;
 
 public class CardWidget extends JPanel {
@@ -23,7 +20,6 @@ public class CardWidget extends JPanel {
     private static final int FONT_SIZE = 14;
     private static final int LABEL_PADDING_TOP = 5;
     
-    // Proporções da imagem dentro do Card
     private static final double IMG_WIDTH_RATIO = 0.6;
     private static final double IMG_HEIGHT_RATIO = 0.5;
 
@@ -31,13 +27,18 @@ public class CardWidget extends JPanel {
     private boolean isHovered = false;
     private Image cardImage;
     private JLabel nameLabel;
+    
+    private final boolean isEnemy; // NOVO CAMPO
 
     public interface OnCardClickListener {
         void onCardClicked(Card card);
     }
 
-    public CardWidget(Card card, int width, int height, OnCardClickListener listener) {
+    // NOVO CONSTRUTOR: Agora recebe isEnemy
+    public CardWidget(Card card, int width, int height, OnCardClickListener listener, boolean isEnemy) {
         this.cardData = card;
+        this.isEnemy = isEnemy;
+        
         setPreferredSize(new Dimension(width, height));
         
         setBackground(getCardColor(card.getType()));
@@ -49,7 +50,16 @@ public class CardWidget extends JPanel {
         setupMouseInteractions(listener);
     }
     
+    
+    public CardWidget(Card card, int width, int height, OnCardClickListener listener) {
+        this(card, width, height, listener, false);
+    }
+    
     private Color getCardColor(CardType type) {
+        if (isEnemy) {
+            // Vermelho Escuro para monstros inimigos
+            return new Color(139, 0, 0); 
+        }
         return (type == CardType.MONSTER) ? Colors.MONSTER_COLOR : Colors.SPELL_COLOR;
     }
 
@@ -93,7 +103,7 @@ public class CardWidget extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                listener.onCardClicked(cardData);
+                if (listener != null) listener.onCardClicked(cardData);
             }
         });
     }

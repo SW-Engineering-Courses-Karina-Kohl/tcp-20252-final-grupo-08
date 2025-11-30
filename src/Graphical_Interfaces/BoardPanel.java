@@ -14,7 +14,6 @@ public class BoardPanel extends JPanel {
     }
 
     public BoardPanel() {
-        // Garante layout fixo: 2 linhas, 5 colunas
         super(new GridLayout(2, 5, 10, 10));
         setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder(10, 50, 20, 50));
@@ -31,12 +30,13 @@ public class BoardPanel extends JPanel {
             MonsterCard monster = enemyMonsters.get(i);
             if (monster != null) {
                 if (isSelectionMode && slotListener != null) {
-                    add(createMonsterWidgetForSelection(monster, i, slotListener));
+                    add(createMonsterWidgetForSelection(monster, i, slotListener, true));
                 } else {
-                    add(new CardWidget(monster, 0, 0, cardListener));
+                    
+                    add(new CardWidget(monster, 0, 0, cardListener, true));
                 }
             } else {
-                add(createEmptySlot(-1, false, null)); // Slot vazio inimigo
+                add(createEmptySlot(-1, false, null)); 
             }
         }
 
@@ -45,12 +45,12 @@ public class BoardPanel extends JPanel {
             MonsterCard monster = playerMonsters.get(i);
             if (monster != null) {
                 if (isSelectionMode && slotListener != null) {
-                    add(createMonsterWidgetForSelection(monster, i, slotListener));
+                    add(createMonsterWidgetForSelection(monster, i, slotListener, false));
                 } else {
-                    add(new CardWidget(monster, 0, 0, cardListener));
+                    
+                    add(new CardWidget(monster, 0, 0, cardListener, false));
                 }
             } else {
-                // Se estiver escolhendo onde jogar (isSelectionMode), o slot fica clicável
                 add(createEmptySlot(i, isSelectionMode, slotListener));
             }
         }
@@ -59,12 +59,12 @@ public class BoardPanel extends JPanel {
         repaint();
     }
 
-    private JComponent createMonsterWidgetForSelection(MonsterCard monster, int index, OnSlotClickListener slotListener) {
+    private JComponent createMonsterWidgetForSelection(MonsterCard monster, int index, OnSlotClickListener slotListener, boolean isEnemy) {
         CardWidget.OnCardClickListener listener = card -> {
             if (slotListener != null) slotListener.onSlotClick(index);
         };
 
-        return new CardWidget(monster, 0, 0, listener);
+        return new CardWidget(monster, 0, 0, listener, isEnemy);
     }
 
 
@@ -72,7 +72,7 @@ public class BoardPanel extends JPanel {
         JPanel slot = new JPanel();
         
         if (isClickable && index >= 0) {
-            slot.setBackground(new Color(50, 205, 50, 50)); // Verde destaque
+            slot.setBackground(new Color(50, 205, 50, 50)); 
             slot.setBorder(BorderFactory.createDashedBorder(Color.GREEN, 2, 5, 2, true));
             slot.setCursor(new Cursor(Cursor.HAND_CURSOR));
             slot.addMouseListener(new MouseAdapter() {
