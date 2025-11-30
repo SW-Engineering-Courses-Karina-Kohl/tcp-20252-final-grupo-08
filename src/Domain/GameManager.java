@@ -21,7 +21,7 @@ public class GameManager {
         this.player = player;
         this.enemy = enemy;
         this.window = window;
-        this.turnCount = 1;
+        this.turnCount = 0;
         this.isPlayerTurn = true; 
     }
 
