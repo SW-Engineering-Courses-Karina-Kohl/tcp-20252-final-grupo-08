@@ -1,6 +1,6 @@
 package Sounds;
 
-import utils.EnummerateSounds;
+import utils.EnumerateSounds;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -96,12 +96,13 @@ public class MusicPlayer {
     }
 
 
+
     // =====================================================================
     // ================================ MAIN ================================
     // =====================================================================
 
     public static void main(String[] args) {
-        EnummerateSounds actualSound;
+        EnumerateSounds actualSound;
 
 
         // Altere o caminho para seu arquivo WAV
@@ -109,7 +110,7 @@ public class MusicPlayer {
 
         System.out.println("Iniciando teste...");
 
-        EnummerateSounds[] sounds = EnummerateSounds.values();
+        EnumerateSounds[] sounds = EnumerateSounds.values();
 
         try {
             Thread.sleep(3000); // espera 3 segundos
