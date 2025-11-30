@@ -1,14 +1,12 @@
 package Graphical_Interfaces;
 
 import Domain.*;
-
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import javax.swing.*;
-
 import utils.Colors;
 
 public class MatchWindow extends JPanel implements CardWidget.OnCardClickListener {
@@ -21,7 +19,6 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private final JLayeredPane layeredPane;
     private final JPanel gameContent;
     
-
     private final HandPanel handPanel;    
     private final BoardPanel boardPanel;  
     private final GameInfoBar topBar; 
@@ -30,9 +27,10 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
 
     private final Player player;
     private final Player enemy;
+    
+    // Variáveis de controle de estado
     private Card pendingCard = null;
     private Card pendingSpell = null;
-
 
     public MatchWindow(ArrayList<Object[]> sizes, Player player, Player enemy) {
         this.player = player;
@@ -55,7 +53,8 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         gameContent.setOpaque(false);
         layeredPane.add(gameContent, JLayeredPane.DEFAULT_LAYER);
 
-        //top bar da HUD
+        // AQUI ESTÁ A BARRA DE CIMA (Onde está o erro do nome "Hero")
+        // O MatchWindow apenas cria ela, mas quem desenha é a classe GameInfoBar
         this.topBar = new GameInfoBar(player, enemy, e -> openPauseMenu(sizes));
         gameContent.add(topBar, BorderLayout.NORTH);
 
@@ -75,8 +74,8 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         refreshUI();
     }
 
+    // Prepara o clique (seja monstro ou feitiço)
     private void prepareToPlaceCard(Card card) {
-
         if (card instanceof MonsterCard) {
             this.pendingCard = card;
             this.pendingSpell = null;
@@ -88,14 +87,13 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         if (card instanceof SpellCard) {
             this.pendingSpell = card;
             this.pendingCard = null;
-
             JOptionPane.showMessageDialog(this, "Escolha um monstro para aplicar o efeito.");
             refreshUI();
         }
     }
 
-
     private void onBoardSlotClicked(int index) {
+        // Lógica para posicionar monstro
         if (pendingCard != null && pendingCard instanceof MonsterCard monster) {
             boolean success = player.getBoard().placeMonsterAt(index, monster);
             if (success) {
@@ -108,6 +106,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
             return;
         }
 
+        // Lógica para usar feitiço
         if (pendingSpell != null && pendingSpell instanceof SpellCard) {
             var opt = player.getBoard().getMonsterAt(index);
             if (opt.isEmpty()) {
@@ -116,34 +115,28 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
             }
 
             MonsterCard target = opt.get();
-
             applySpellToMonster(pendingSpell, target);
 
-            // remove spell da mão
             player.getHand().remove(pendingSpell);
             pendingSpell = null;
-
             refreshUI();
         }
     }
 
     private void applySpellToMonster(Card spell, MonsterCard target) {
-
         switch(spell.getName()) {
-
             case "Upgrade" -> SpellEffects.castUpgrade(player, target);
             case "Cura" -> SpellEffects.castHeal(player, target);
             case "Bola de Fogo" -> SpellEffects.castFireball(player, target);
-
             default -> JOptionPane.showMessageDialog(this, "Spell sem efeito implementado!");
         }
     }
-
 
     private void refreshUI() {
         handPanel.updateHand(player.getHand(), this);
 
         boolean selectionMode = (pendingCard != null) || (pendingSpell != null);
+        
         boardPanel.updateBoard(
             enemy.getBoard().getMonsters(),
             player.getBoard().getMonsters(),
@@ -151,12 +144,17 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
             this::onBoardSlotClicked, 
             selectionMode
         );
+        
+        // Atualiza a barra superior se necessário (caso a vida tenha mudado)
+        topBar.repaint();
     }
 
     @Override
     public void onCardClicked(Card card) {
-        if (pendingCard != null) {
-            pendingCard = null; 
+        // Se já estiver selecionando algo e clicar em outra carta, cancela a seleção anterior
+        if (pendingCard != null || pendingSpell != null) {
+            pendingCard = null;
+            pendingSpell = null;
             refreshUI();
         }
         openInspection(card);
@@ -166,18 +164,11 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         if (inspectionPanel != null) layeredPane.remove(inspectionPanel);
 
         Consumer<Card> playAction = null;
+        
+        // Verifica se a carta está na mão do jogador
         if (player.getHand().contains(card)) {
-            if (card instanceof MonsterCard) {
-                // Jogar monstro no tabuleiro
-                playAction = this::prepareToPlaceCard;
-
-            } else if (card.getType() == CardType.SPELL) {
-                // Usar spell → abrir seleção de alvo no Board
-                playAction = usedCard -> {
-                    pendingSpell = usedCard;  // <-- você provavelmente já tem pendingSpell
-                    refreshUI();              // deixa o tabuleiro em modo seleção
-                };
-            }
+            // Simplificado: direciona tudo para o método central prepareToPlaceCard
+            playAction = this::prepareToPlaceCard;
         }
 
         inspectionPanel = new CardInspectionPanel(card, this::closeInspection, playAction);

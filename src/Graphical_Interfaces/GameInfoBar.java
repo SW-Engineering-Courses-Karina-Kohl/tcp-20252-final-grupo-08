@@ -13,7 +13,20 @@ public class GameInfoBar extends JPanel {
     private static final Font INFO_FONT = new Font("Serif", Font.BOLD, 16);
     private static final Color TEXT_COLOR = Color.WHITE;
 
+    // Labels que precisam ser atualizados transformados em campos da classe
+    private JLabel turnLabel;
+    private JLabel timeLabel;
+    private JLabel enemyStatusLabel;
+    private JLabel playerStatusLabel;
+    private JLabel moneyLabel;
+
+    private final Player player;
+    private final Player enemy;
+
     public GameInfoBar(Player player, Player enemy, ActionListener onPauseAction) {
+        this.player = player;
+        this.enemy = enemy;
+
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 15));
         setBackground(BAR_BACKGROUND);
         setPreferredSize(new Dimension(800, BAR_HEIGHT)); 
@@ -29,23 +42,41 @@ public class GameInfoBar extends JPanel {
         add(createSeparator());
 
         // --- Status do Jogo ---
-        add(createLabel("Turno: 1"));
-        add(createLabel("Tempo: 00:00"));
+        turnLabel = createLabel("Turno: 1");
+        add(turnLabel);
+        
+        timeLabel = createLabel("Tempo: 00:00");
+        add(timeLabel);
 
         add(createSeparator());
 
         // --- Status do Inimigo ---
-        add(createLabel(enemy.getName() + ": " + enemy.getHealth() + " HP"));
+        enemyStatusLabel = createLabel(""); // Texto definido no updateValues
+        add(enemyStatusLabel);
 
         add(createSeparator());
 
         // --- Status do Jogador ---
-        add(createLabel(player.getName() + ": " + player.getHealth() + " HP"));
+        playerStatusLabel = createLabel(""); // Texto definido no updateValues
+        add(playerStatusLabel);
         
         // Exibe os recursos do jogador
-        JLabel moneyLabel = createLabel("$ " + player.getMoney());
+        moneyLabel = createLabel("");
         moneyLabel.setForeground(new Color(255, 215, 0)); // Dourado
         add(moneyLabel);
+
+        // Define os textos iniciais
+        updateValues();
+    }
+
+    // Método chamado para atualizar os textos na tela
+    public void updateValues() {
+        enemyStatusLabel.setText(enemy.getName() + ": " + enemy.getHealth() + " HP");
+        playerStatusLabel.setText(player.getName() + ": " + player.getHealth() + " HP");
+        moneyLabel.setText("$ " + player.getMoney());
+        
+        // Se tiver lógica de turno/tempo no Player, atualize aqui também
+        // turnLabel.setText("Turno: " + ...);
     }
 
     private JLabel createLabel(String text) {
@@ -64,6 +95,9 @@ public class GameInfoBar extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        // Garante que os valores estejam atualizados antes de desenhar
+        updateValues();
+        
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setColor(getBackground());
         g2d.fillRect(0, 0, getWidth(), getHeight());
