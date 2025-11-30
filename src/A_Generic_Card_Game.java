@@ -1,9 +1,12 @@
 import Graphical_Interfaces.HomeMenu_GraphicWindow;
 import Graphical_Interfaces.MatchWindow;
+import Sounds.GlobalMusic;
 import Sounds.MusicPlayer;
 import java.util.ArrayList;
 import javax.swing.*;
-import utils.EnummerateSounds;
+
+import utils.EnumerateScales;
+import utils.EnumerateSounds;
 import utils.GameStartListener;
 
 public class A_Generic_Card_Game {
@@ -11,13 +14,13 @@ public class A_Generic_Card_Game {
         int width = 640;
         int height = 480;
         int actualSound = 4;
+        int actualScale = 0;
 
-        EnummerateSounds[] sounds = EnummerateSounds.values();
-
-        String actualScale = new String("640p");
+        EnumerateSounds[] sounds = EnumerateSounds.values();
+        EnumerateScales[] scale = EnumerateScales.values();
 
         ArrayList<Object[]> sizes = new ArrayList<>();
-        sizes.add(new Object[] {width, height, actualScale, sounds[actualSound].getLabel()});
+        sizes.add(new Object[] {width, height, scale[actualScale].getLabel(), sounds[actualSound].getLabel()});
 
         GameStartListener starter = (w, h) -> {
             SwingUtilities.invokeLater(() -> {
@@ -25,7 +28,7 @@ public class A_Generic_Card_Game {
                 gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 
-                MatchWindow gamePanel = new MatchWindow(w, h);
+                MatchWindow gamePanel = new MatchWindow(sizes);
                 
                 gameFrame.add(gamePanel);
                 gameFrame.setSize(w, h);
@@ -35,9 +38,11 @@ public class A_Generic_Card_Game {
                 gamePanel.startGameSetup();
             });
         };
-        MusicPlayer player = new MusicPlayer("src/Sounds/ambient-background-2-421085.wav");
-        player.setVolume(sounds[actualSound].getValue());
-        player.playLoop();
+
+        GlobalMusic.themeMusic = new MusicPlayer("src/Sounds/ambient-background-2-421085.wav");
+        GlobalMusic.themeMusic.setVolume(sounds[actualSound].getValue());
+        GlobalMusic.themeMusic.playLoop();
+
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("A Generic Card Game - Menu Principal");
