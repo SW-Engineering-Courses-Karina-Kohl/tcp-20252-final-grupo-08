@@ -1,15 +1,15 @@
-public class PlayerCardLog {
-    private static final Logger logger = LogManager.getLogger(PlayerCardLog.class);
+public class CardLog {
+    private static final Logger logger = LogManager.getLogger(CardLog.class);
 
-    public static void cardPlayed(String cardName) {
-        logger.info("Jogador jogou a carta {}", cardName);
+    public static void cardPlayed(String player, String cardName) {
+        logger.info("{} jogou a carta {}", player, cardName);
     }
 
-    public static void InvalidCard(String cardName) {
-        logger.warn("Tentativa inválida: Jogador tentou jogar a carta {}", carta);
+    public static void InvalidCard(String player, String cardName) {
+        logger.warn("Tentativa inválida: {} tentou jogar a carta {}", player, cardName);
     }
 
-    public static void efeitoErro(String carta, Exception e) {
-        logger.error("Erro ao ativar efeito da carta {}", carta, e);
+    public static void cardError(String cardName, Exception e) {
+        logger.error("Erro ao ativar efeito da carta {}", cardName, e);
     }
 }
