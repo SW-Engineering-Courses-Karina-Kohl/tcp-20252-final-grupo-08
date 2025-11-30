@@ -1,6 +1,6 @@
 package utils;
 
-public enum EnummerateSounds {
+public enum EnumerateSounds {
 
     PERCENT_0("0%", 0.00),
     PERCENT_25("25%", 0.25),
@@ -11,7 +11,7 @@ public enum EnummerateSounds {
     private final String label;
     private final double value;
 
-    EnummerateSounds(String label, double value) {
+    EnumerateSounds(String label, double value) {
         this.label = label;
         this.value = value;
     }
@@ -28,4 +28,14 @@ public enum EnummerateSounds {
     public String toString() {
         return label;
     }
+
+    public static EnumerateSounds fromLabel(String label) {
+        for (EnumerateSounds s : values()) {
+            if (s.getLabel().equals(label)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
 }
