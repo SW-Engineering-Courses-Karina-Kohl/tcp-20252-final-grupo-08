@@ -5,52 +5,49 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import javax.swing.*;
+
+import Sounds.GlobalMusic;
 import utils.Colors;
+import utils.EnumerateScales;
+import utils.EnumerateSounds;
 
 public class OptionsMenu_GraphicWindow extends JPanel {
 
-    private JPanel container;
-    private JLabel title;
+    private final JLabel title;
 
-    private RoundedButton scaleButton;
-    private SizedComboBox<String> scaleSelector;
+    private final RoundedButton scaleButton;
+    private final SizedComboBox<String> scaleSelector;
 
-    private RoundedButton soundButton;
-    private SizedComboBox<String> soundSelector;
+    private final RoundedButton soundButton;
+    private final SizedComboBox<String> soundSelector;
 
-    private JButton backButton;
-
-    private int spaceButtons;
-    private int boxWidth;
-    private int boxHeight;
-    private int buttonWidth;
-    private int buttonHeight;
+    private final JButton backButton;
 
     private String actualScale;
     private String actualSound;
 
-    private ContainerManager containerManager;  // <<< Gerenciador do container
+    private final ContainerManager containerManager;  // <<< Gerenciador do container
 
     public OptionsMenu_GraphicWindow(ArrayList<Object[]> sizes) {
 
-        Object[] first = sizes.get(0);
+        Object[] first = sizes.getFirst();
 
-        int windowsWidth = (int) first[0];
-        int windowsHeight = (int) first[1];
+        int windowsWidth = 640;
+        int windowsHeight = 480;
         actualScale = (String) first[2];
         actualSound = (String) first[3];
 
-        boxWidth = (int) (windowsWidth * 0.22);
-        boxHeight = (int) (windowsHeight * 0.07);
+        int boxWidth = (int) (windowsWidth * 0.22);
+        int boxHeight = (int) (windowsHeight * 0.07);
 
-        spaceButtons = (int) (boxWidth * 0.8);
-        buttonWidth = boxWidth / 2;
-        buttonHeight = boxHeight / 2;
+        int spaceButtons = (int) (boxWidth * 0.8);
+        int buttonWidth = boxWidth / 2;
+        int buttonHeight = boxHeight / 2;
 
         setLayout(null);
 
         // ===================== CONTAINER =====================
-        container = new JPanel();
+        JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
 
@@ -108,6 +105,16 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         soundSelector.setBackground(Colors.OPTION_BUTTON);
         soundSelector.setForeground(Colors.TEXT_OPTION_BUTTON);
 
+        scaleSelector.addActionListener(e -> {
+            actualScale = (String) scaleSelector.getSelectedItem();
+            updateScale(sizes, actualScale);
+        });
+
+        soundSelector.addActionListener(e -> {
+            actualSound = (String) soundSelector.getSelectedItem();
+            updateSound(sizes, actualSound);
+        });
+
         // ===================== LINHA SCALE =====================
         JPanel linhaScale = new JPanel();
         linhaScale.setLayout(new BoxLayout(linhaScale, BoxLayout.X_AXIS));
@@ -143,6 +150,30 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         });
 
     }
+
+    private void updateScale(ArrayList<Object[]> sizes, String actualScale){
+        Object[] first = sizes.getFirst();
+
+        EnumerateScales scale = EnumerateScales.fromLabel(actualScale);
+        assert scale != null;
+        int width = scale.getWidth();
+        int height = scale.getHeight();
+
+        sizes.set(0, new Object[] { width, height, actualScale, first[3] });
+    }
+
+    private void updateSound(ArrayList<Object[]> sizes, String actualSound) {
+        Object[] first = sizes.getFirst();
+
+        sizes.set(0, new Object[] { first[0], first[1], first[2], actualSound });
+
+        EnumerateSounds sound = EnumerateSounds.fromLabel(actualSound);
+        if (sound != null && GlobalMusic.themeMusic != null) {
+            GlobalMusic.themeMusic.setVolume(sound.getValue());
+        }
+    }
+
+
 
     @Override
     protected void paintComponent(Graphics g) {
