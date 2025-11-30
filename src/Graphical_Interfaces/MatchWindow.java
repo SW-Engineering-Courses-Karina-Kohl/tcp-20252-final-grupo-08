@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import utils.Colors;
-import utils.GameStartListener;
 
 public class MatchWindow extends JPanel implements CardWidget.OnCardClickListener {
 
@@ -20,21 +19,24 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
     private static final double CARD_WIDTH_RATIO = 0.66;
     private static final int HAND_MARGIN = 35;
     private static final int HAND_GAP = 15;
-    private static final int EXIT_BUTTON_RADIUS = 15;
+    private static final int PAUSE_BUTTON_RADIUS = 15;
+
+    private static final String TXT_PAUSE_BUTTON = "Pause";
     
-    
-    private static final String TXT_EXIT_BUTTON = "Voltar ao Menu";
-    private static final String TXT_CONFIRM_TITLE = "Sair";
-    private static final String TXT_CONFIRM_MSG = "Deseja voltar ao menu principal?";
-    private static final String WINDOW_TITLE_MENU = "A Generic Card Game - Menu Principal";
-    private static final String WINDOW_TITLE_MATCH = "A Generic Card Game - Partida";
+
 
     private final JLayeredPane layeredPane;
     private final JPanel gameContent;
     private JPanel handPanel;
     private CardInspectionPanel inspectionPanel;
     
-    public MatchWindow(int width, int height) {
+    public MatchWindow(ArrayList<Object[]> sizes) {
+
+        Object[] first = sizes.getFirst();
+
+        int width = (int) first[0];
+        int height = (int) first[1];
+
         setLayout(new BorderLayout());
         setSize(width, height);
         setBackground(Colors.GENERAL_BACKGROUND.darker());
@@ -46,7 +48,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         gameContent.setOpaque(false);
         layeredPane.add(gameContent, JLayeredPane.DEFAULT_LAYER);
 
-        initializeTopBar();
+        initializeTopBar(sizes);
         initializeHandPanel(width, height);
         
         addComponentListener(new ComponentAdapter() {
@@ -76,63 +78,32 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
         }
     }
 
-    private void initializeTopBar() {
-        RoundedButton exitButton = new RoundedButton(TXT_EXIT_BUTTON, EXIT_BUTTON_RADIUS);
-        exitButton.setBackground(Colors.END_GAME_BUTTON);
-        exitButton.setForeground(Colors.TEXT_END_GAME_BUTTON);
-        
-        exitButton.addActionListener(e -> handleExitToMenu());
+    private void initializeTopBar(ArrayList<Object[]> sizes) {
+        RoundedButton pauseButton = new RoundedButton(TXT_PAUSE_BUTTON, PAUSE_BUTTON_RADIUS);
+        pauseButton.setBackground(Colors.OPTION_BUTTON);
+        pauseButton.setForeground(Colors.TEXT_OPTION_BUTTON);
+
+        pauseButton.addActionListener(e -> handleOpenPauseMenu(sizes));
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setOpaque(false);
-        topPanel.add(exitButton);
+        topPanel.add(pauseButton);
+
         
         gameContent.add(topPanel, BorderLayout.NORTH);
     }
     
-    private void handleExitToMenu() {
-        int confirm = JOptionPane.showConfirmDialog(this, 
-            TXT_CONFIRM_MSG, TXT_CONFIRM_TITLE, JOptionPane.YES_NO_OPTION);
-            
-        if (confirm == JOptionPane.YES_OPTION) {
-            JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            if (currentFrame != null) currentFrame.dispose();
-            
-            rebuildMainMenu(getWidth(), getHeight());
-        }
-    }
-
-    private void rebuildMainMenu(int w, int h) {
-        ArrayList<Object[]> sizes = new ArrayList<>();
-        sizes.add(new Object[] {w, h, "640p", "100%"}); 
-
-        GameStartListener starter = (newW, newH) -> SwingUtilities.invokeLater(() -> {
-            JFrame gameFrame = createGameFrame(newW, newH);
-            gameFrame.setVisible(true);
-            gameFrame.add(new MatchWindow(newW, newH));
-        });
+    private void handleOpenPauseMenu(ArrayList<Object[]> sizes) {
+        PauseWindow menuPause = new PauseWindow(sizes);
 
         SwingUtilities.invokeLater(() -> {
-            JFrame menuFrame = new JFrame(WINDOW_TITLE_MENU);
-            menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            menuFrame.setResizable(false);
-            menuFrame.add(new HomeMenu_GraphicWindow(sizes, starter));
-            menuFrame.getContentPane().setPreferredSize(new Dimension(w, h));
-            menuFrame.pack();
-            menuFrame.setLocationRelativeTo(null);
-            menuFrame.setVisible(true);
+            JFrame frame = new JFrame("Janela de Pause");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.add(menuPause);
+            frame.setSize(425, 320);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
         });
-    }
-
-    private JFrame createGameFrame(int w, int h) {
-        JFrame gameFrame = new JFrame(WINDOW_TITLE_MATCH);
-        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameFrame.setResizable(false); 
-        
-        gameFrame.setPreferredSize(new Dimension(w, h));
-        gameFrame.pack();
-        gameFrame.setLocationRelativeTo(null);
-        return gameFrame;
     }
     
     private void initializeHandPanel(int w, int h) {
