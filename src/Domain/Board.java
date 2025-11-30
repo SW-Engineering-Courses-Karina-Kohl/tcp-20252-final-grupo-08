@@ -33,6 +33,11 @@ public class Board {
         monsters.remove(card);
     }
 
+    public boolean addMonster(MonsterCard card) {
+            
+        return false; 
+    }
+
     public boolean isFull() {
         return monsters.size() >= MAX_MONSTER_SLOTS;
     }
