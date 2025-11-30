@@ -97,7 +97,7 @@ public class OptionsMenu_GraphicWindow extends JPanel {
         scaleSelector.setForeground(Colors.TEXT_OPTION_BUTTON);
 
         soundSelector = new SizedComboBox<>(
-                new String[]{"0%", "25%", "50%", "75%", "100%"},
+                new String[]{"0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"},
                 buttonWidth, buttonHeight
         );
         soundSelector.setSelectedItem(actualSound);

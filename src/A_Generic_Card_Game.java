@@ -16,7 +16,7 @@ public class A_Generic_Card_Game {
     public static void main(String[] args) {
         int width = 640;
         int height = 480;
-        int actualSound = 4;
+        int actualSound = 10;
         int actualScale = 0;
 
         EnumerateSounds[] sounds = EnumerateSounds.values();
