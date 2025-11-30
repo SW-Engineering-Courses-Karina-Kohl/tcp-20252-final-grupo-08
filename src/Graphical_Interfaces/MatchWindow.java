@@ -78,7 +78,7 @@ public class MatchWindow extends JPanel implements CardWidget.OnCardClickListene
             this.pendingCard = card;
             refreshUI(); 
         } else {
-            JOptionPane.showMessageDialog(this, "Apenas tropas podem ir ao campo.");
+            JOptionPane.showMessageDialog(this, "ainda não implementado.");
         }
     }
 
