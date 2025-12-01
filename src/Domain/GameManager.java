@@ -12,8 +12,8 @@ public class GameManager {
 
     private final Player player;
     private final Player enemy;
-    private final MatchWindow window; 
-    
+    private final MatchWindow window;
+
     private boolean isPlayerTurn;
     private int turnCount;
 
@@ -22,7 +22,7 @@ public class GameManager {
         this.enemy = enemy;
         this.window = window;
         this.turnCount = 0;
-        this.isPlayerTurn = true; 
+        this.isPlayerTurn = true;
     }
 
     public void startGame() {
@@ -30,18 +30,44 @@ public class GameManager {
         startPlayerTurn();
     }
 
+    // NÃO FUNCIONA
+
+    // public void startGameLoop() {
+
+    // Random random = new Random();
+    // Player startingPlayer = random.nextBoolean() ? player : enemy;
+    // Player otherPlayer = startingPlayer == player ? enemy : player;
+    // Player currentPlayer = startingPlayer;
+
+    // while (!player.isDefeated() && !enemy.isDefeated()) {
+
+    // window.refreshUI();
+
+    // if (currentPlayer == player) {
+    // startPlayerTurn();
+    // } else
+    // startEnemyTurn();
+
+    // Player temp = currentPlayer;
+    // currentPlayer = otherPlayer;
+    // otherPlayer = temp;
+
+    // }
+    // }
+
     private void startPlayerTurn() {
         isPlayerTurn = true;
         turnCount++;
-        
-        player.addMoney(2); 
-        player.drawCard();  
-        
+
+        player.addMoney(2);
+        player.drawCard();
+
         window.refreshUI();
     }
 
     public void endPlayerTurn() {
-        if (!isPlayerTurn) return;
+        if (!isPlayerTurn)
+            return;
 
         isPlayerTurn = false;
         startEnemyTurn();
@@ -53,16 +79,16 @@ public class GameManager {
                 // Simulação simples de pensamento
                 // Nota: Em uma thread de UI real, usar Thread.sleep pode congelar levemente,
                 // mas para este exemplo simples funciona.
-                
+
                 enemy.addMoney(2);
                 enemy.drawCard();
-                
+
                 executeEnemyAI();
-                
+
                 window.refreshUI();
-                
+
                 startPlayerTurn();
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -71,16 +97,16 @@ public class GameManager {
 
     private void executeEnemyAI() {
         List<Card> hand = enemy.getHand();
-        
+
         // 1. Embaralha a mão para não jogar sempre a primeira carta que vê
         Collections.shuffle(hand);
 
         for (int i = 0; i < hand.size(); i++) {
             Card card = hand.get(i);
-            
+
             // Verifica se tem dinheiro e se é um Monstro
             if (enemy.getMoney() >= card.getCost() && card instanceof MonsterCard monster) {
-                
+
                 int targetSlot = -1;
 
                 // ESTRATÉGIA A: Counter (Defesa)
@@ -134,7 +160,7 @@ public class GameManager {
             System.exit(0);
         }
     }
-    
+
     public boolean isPlayerTurn() {
         return isPlayerTurn;
     }
