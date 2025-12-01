@@ -10,7 +10,7 @@ import javax.swing.*;
 public class BoardPanel extends JPanel {
 
     public interface OnSlotClickListener {
-        void onSlotClick(int index);
+        void onSlotClick(int index, boolean isEnemySide);
     }
 
     public BoardPanel() {
@@ -19,10 +19,10 @@ public class BoardPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 50, 20, 50));
     }
 
-    public void updateBoard(List<MonsterCard> enemyMonsters, List<MonsterCard> playerMonsters, 
-                          CardWidget.OnCardClickListener cardListener,
-                          OnSlotClickListener slotListener,
-                          boolean isSelectionMode) {
+    public void updateBoard(List<MonsterCard> enemyMonsters, List<MonsterCard> playerMonsters,
+            CardWidget.OnCardClickListener cardListener,
+            OnSlotClickListener slotListener,
+            boolean isSelectionMode) {
         removeAll();
 
         // Renderiza Inimigo (Slots superiores)
@@ -32,11 +32,11 @@ public class BoardPanel extends JPanel {
                 if (isSelectionMode && slotListener != null) {
                     add(createMonsterWidgetForSelection(monster, i, slotListener, true));
                 } else {
-                    
+
                     add(new CardWidget(monster, 0, 0, cardListener, true));
                 }
             } else {
-                add(createEmptySlot(-1, false, null)); 
+                add(createEmptySlot(-1, false, null, true));
             }
         }
 
@@ -47,11 +47,11 @@ public class BoardPanel extends JPanel {
                 if (isSelectionMode && slotListener != null) {
                     add(createMonsterWidgetForSelection(monster, i, slotListener, false));
                 } else {
-                    
+
                     add(new CardWidget(monster, 0, 0, cardListener, false));
                 }
             } else {
-                add(createEmptySlot(i, isSelectionMode, slotListener));
+                add(createEmptySlot(i, isSelectionMode, slotListener, false));
             }
         }
 
@@ -59,26 +59,27 @@ public class BoardPanel extends JPanel {
         repaint();
     }
 
-    private JComponent createMonsterWidgetForSelection(MonsterCard monster, int index, OnSlotClickListener slotListener, boolean isEnemy) {
+    private JComponent createMonsterWidgetForSelection(MonsterCard monster, int index, OnSlotClickListener slotListener,
+            boolean isEnemy) {
         CardWidget.OnCardClickListener listener = card -> {
-            if (slotListener != null) slotListener.onSlotClick(index);
+            if (slotListener != null)
+                slotListener.onSlotClick(index, isEnemy);
         };
 
         return new CardWidget(monster, 0, 0, listener, isEnemy);
     }
 
-
-    private JPanel createEmptySlot(int index, boolean isClickable, OnSlotClickListener listener) {
+    private JPanel createEmptySlot(int index, boolean isClickable, OnSlotClickListener listener, boolean isEnemy) {
         JPanel slot = new JPanel();
-        
+
         if (isClickable && index >= 0) {
-            slot.setBackground(new Color(50, 205, 50, 50)); 
+            slot.setBackground(new Color(50, 205, 50, 50));
             slot.setBorder(BorderFactory.createDashedBorder(Color.GREEN, 2, 5, 2, true));
             slot.setCursor(new Cursor(Cursor.HAND_CURSOR));
             slot.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    listener.onSlotClick(index);
+                    listener.onSlotClick(index, isEnemy);
                 }
             });
         } else {

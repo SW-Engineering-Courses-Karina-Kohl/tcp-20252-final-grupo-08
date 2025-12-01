@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Board {
-    
+
     private static final int MAX_MONSTER_SLOTS = 5;
     private final List<MonsterCard> monsters;
 
@@ -51,5 +51,27 @@ public class Board {
                 monster.updateStatsUses();
             }
         }
+    }
+
+    public void removeMonsterFrom(int index) {
+        if (monsters.get(index) != null) {
+            monsters.set(index, null);
+        }
+    }
+
+    public int countMonsters() {
+        int count = 0;
+        for (int i = 0; i < 5; i++) {
+            if (monsters.get(i) != null) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public Optional<MonsterCard> getOpposingMonster(MonsterCard card, Player enemy) {
+        int index = card.getBoardPosition();
+        return enemy.getBoard().getMonsterAt(index);
     }
 }

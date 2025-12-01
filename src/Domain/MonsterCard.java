@@ -3,40 +3,65 @@ package Domain;
 import java.util.*;
 
 public class MonsterCard extends AbstractCard {
-    
+
     private final int baseAttack;
     private final int baseDefense;
     private int currentDefense;
-
+    private int boardPosition;
+    private boolean attackedThisTurn;
 
     private final List<MagicStatus> statsUses = new ArrayList<>();
     private final Map<String, Integer> appliedEffects = new HashMap<>();
-
 
     public MonsterCard(String name, String description, String imagePath, int cost, int attack, int defense) {
         super(name, description, imagePath, cost);
         this.baseAttack = attack;
         this.baseDefense = defense;
         this.currentDefense = defense;
-
+        this.boardPosition = -1;
+        this.attackedThisTurn = false;
     }
 
     @Override
-    public CardType getType() { return CardType.MONSTER; }
+    public CardType getType() {
+        return CardType.MONSTER;
+    }
 
-    public int getBaseAttack() { return baseAttack; }
+    public boolean hasAttacked (){
+        return attackedThisTurn;
+    }
 
-    public int getBaseDefense() { return baseDefense; }
+    public void setAttacked(boolean status){
+        this.attackedThisTurn = status;
+    }
 
-    public int getAttack() { return baseAttack + statsUses.stream().mapToInt(MagicStatus::getAttackModifier).sum(); }
+    public int getBaseAttack() {
+        return baseAttack;
+    }
 
-    public int getDefense() { return currentDefense + statsUses.stream().mapToInt(MagicStatus::getDefenseModifier).sum(); }
+    public int getBaseDefense() {
+        return baseDefense;
+    }
 
-    public Map<String, Integer> getAppliedEffects() { return Collections.unmodifiableMap(appliedEffects); }
+    public int getAttack() {
+        return baseAttack + statsUses.stream().mapToInt(MagicStatus::getAttackModifier).sum();
+    }
 
-    public List<MagicStatus> getStatsUses() { return statsUses; }
+    public int getDefense() {
+        return currentDefense + statsUses.stream().mapToInt(MagicStatus::getDefenseModifier).sum();
+    }
 
-    public void heal(int amount) { currentDefense += amount; }
+    public Map<String, Integer> getAppliedEffects() {
+        return Collections.unmodifiableMap(appliedEffects);
+    }
+
+    public List<MagicStatus> getStatsUses() {
+        return statsUses;
+    }
+
+    public void heal(int amount) {
+        currentDefense += amount;
+    }
 
     public void applyStatus(MagicStatus status) {
         statsUses.add(status);
@@ -46,7 +71,8 @@ public class MonsterCard extends AbstractCard {
 
     public void receiveDamage(int amount) {
         currentDefense -= amount;
-        if (currentDefense < 0) currentDefense = 0;
+        if (currentDefense < 0)
+            currentDefense = 0;
     }
 
     public List<String> getActiveEffectNames() {
@@ -60,7 +86,6 @@ public class MonsterCard extends AbstractCard {
     public Map<String, Integer> getEffectCounts() {
         return Collections.unmodifiableMap(appliedEffects);
     }
-
 
     /** Remove efeitos expirados */
     public void updateStatsUses() {
@@ -77,6 +102,19 @@ public class MonsterCard extends AbstractCard {
             appliedEffects.merge(status.getName(), 1, Integer::sum);
         }
 
-        if (currentDefense < 0) currentDefense = 0;
+        if (currentDefense < 0)
+            currentDefense = 0;
+    }
+
+    public int getBoardPosition() {
+        return boardPosition;
+    }
+
+    public void setBoardPosition(int index) {
+        this.boardPosition = index;
+    }
+
+    public boolean isOnField() {
+        return (boardPosition >= 0);
     }
 }

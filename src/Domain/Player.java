@@ -6,11 +6,12 @@ import java.util.List;
 public class Player {
     private String name;
     private int health;
-    private int money; 
-    
+    private int money;
+    private boolean defeated;
+
     private List<Card> deck;
     private List<Card> hand;
-    private Board board; 
+    private Board board;
 
     public Player(String name, int health, List<Card> deck) {
         this.name = name;
@@ -18,7 +19,8 @@ public class Player {
         this.deck = deck;
         this.hand = new ArrayList<>();
         this.board = new Board();
-        this.money = 10; 
+        this.money = 10;
+        this.defeated = false;
     }
 
     public void drawCard() {
@@ -27,11 +29,25 @@ public class Player {
         }
     }
 
-    public String getName() {  return name; }
+    public boolean isDefeated() {
+        return defeated;
+    }
 
-    public int getHealth() { return health; }
+    public void setDefeated(boolean defeated) {
+        this.defeated = defeated;
+    }
 
-    public int getMoney() { return money; }
+    public String getName() {
+        return name;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getMoney() {
+        return money;
+    }
 
     public void addMoney(int amount) {
         this.money += amount;
@@ -41,15 +57,23 @@ public class Player {
         this.money -= amount;
     }
 
-    public List<Card> getDeck() { return deck; }
+    public List<Card> getDeck() {
+        return deck;
+    }
 
-    public List<Card> getHand() { return hand; }
-    
-    public Board getBoard() { return board; }
+    public List<Card> getHand() {
+        return hand;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
 
     private List<AppliedEffect> usedEffects = new ArrayList<>();
 
-    public List<AppliedEffect> getUsedEffects() { return usedEffects; }
+    public List<AppliedEffect> getUsedEffects() {
+        return usedEffects;
+    }
 
     public void registerEffectUse(String effectName) {
         for (AppliedEffect eff : usedEffects) {
@@ -59,5 +83,11 @@ public class Player {
             }
         }
         usedEffects.add(new AppliedEffect(effectName));
+    }
+
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health < 0)
+            health = 0;
     }
 }

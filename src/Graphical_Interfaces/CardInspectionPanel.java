@@ -13,11 +13,15 @@ public class CardInspectionPanel extends JPanel {
 
     private final Runnable onCloseCallback;
     private final Consumer<Card> onPlayCallback;
+    private final Consumer<MonsterCard> onAttackCallback;
 
-    public CardInspectionPanel(Card card, Runnable onCloseCallback, Consumer<Card> onPlayCallback) {
+    public CardInspectionPanel(Card card, Runnable onCloseCallback, Consumer<Card> onPlayCallback,
+            Consumer<MonsterCard> onAttackCallback) {
+
         this.onCloseCallback = onCloseCallback;
         this.onPlayCallback = onPlayCallback;
-        
+        this.onAttackCallback = onAttackCallback;
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Colors.OPTION_BUTTON.darker());
         setBorder(BorderFactory.createLineBorder(Colors.GENERAL_BUTTON, 5));
@@ -28,7 +32,7 @@ public class CardInspectionPanel extends JPanel {
 
     private void buildUI(Card card) {
         add(Box.createVerticalStrut(15));
-        
+
         JLabel imageLabel = createCardImageLabel(card);
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(imageLabel);
@@ -42,7 +46,7 @@ public class CardInspectionPanel extends JPanel {
         add(Box.createVerticalStrut(10));
         add(createDescriptionArea(card.getDescription()));
 
-        //Só adiciona o botão se existir uma ação de jogar (se a carta estiver na mão)
+        // Só adiciona o botão se existir uma ação de jogar (se a carta estiver na mão)
         if (onPlayCallback != null) {
             add(Box.createVerticalStrut(10));
             add(createPlayButton(card));
@@ -53,14 +57,20 @@ public class CardInspectionPanel extends JPanel {
             add(createActionsPanel(card));
         }
 
-        add(Box.createVerticalGlue()); 
+        if ((card instanceof MonsterCard monster) && (onPlayCallback == null) && (onAttackCallback != null)) {
+
+            add(Box.createVerticalStrut(10));
+            add(createAttackButton(monster));
+        }
+
+        add(Box.createVerticalGlue());
         add(createBackButton());
-        add(Box.createVerticalStrut(15)); 
+        add(Box.createVerticalStrut(15));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g); 
+        super.paintComponent(g);
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
     }
@@ -79,9 +89,26 @@ public class CardInspectionPanel extends JPanel {
         return playBtn;
     }
 
+    private JButton createAttackButton(MonsterCard monster) {
+        RoundedButton attack = new RoundedButton("Atacar", 10);
+        attack.setBackground(new Color(50, 205, 50));
+        attack.setForeground(Color.WHITE);
+        attack.setAlignmentX(Component.CENTER_ALIGNMENT);
+        attack.addActionListener(e -> {
+            if (onAttackCallback != null) {
+                onAttackCallback.accept(monster);
+            }
+            if (onCloseCallback != null) {
+                onCloseCallback.run();
+            }
+        });
+        return attack;
+    }
+
     private JLabel createCardImageLabel(Card card) {
         URL imageUrl = getClass().getResource(card.getImagePath());
-        if (imageUrl == null) imageUrl = getClass().getResource("/resources/placeholder.png");
+        if (imageUrl == null)
+            imageUrl = getClass().getResource("/resources/placeholder.png");
         if (imageUrl != null) {
             ImageIcon icon = new ImageIcon(imageUrl);
             Image img = icon.getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH);
@@ -128,7 +155,7 @@ public class CardInspectionPanel extends JPanel {
         desc.setOpaque(false);
         desc.setForeground(Colors.TEXT_OPTION_BUTTON);
         desc.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
-        desc.setMaximumSize(new Dimension(Short.MAX_VALUE, 100)); 
+        desc.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
         return desc;
     }
 
@@ -142,7 +169,8 @@ public class CardInspectionPanel extends JPanel {
             btn.setBackground(Colors.GENERAL_BUTTON.brighter());
             btn.addActionListener(e -> {
                 action.execute();
-                if (onCloseCallback != null) onCloseCallback.run();
+                if (onCloseCallback != null)
+                    onCloseCallback.run();
             });
             actionsPanel.add(btn);
         }
@@ -155,7 +183,8 @@ public class CardInspectionPanel extends JPanel {
         backBtn.setForeground(Colors.TEXT_OPTION_BUTTON);
         backBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         backBtn.addActionListener(e -> {
-            if (onCloseCallback != null) onCloseCallback.run();
+            if (onCloseCallback != null)
+                onCloseCallback.run();
         });
         return backBtn;
     }

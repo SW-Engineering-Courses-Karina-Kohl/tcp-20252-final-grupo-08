@@ -21,13 +21,27 @@ public class GameInfoBar extends JPanel {
     private final Player player;
     private final Player enemy;
 
-    public GameInfoBar(Player player, Player enemy, ActionListener onPauseAction, ActionListener onEndTurnAction) {
+    public GameInfoBar(Player player, Player enemy, 
+        ActionListener onPauseAction, 
+        ActionListener onEndTurnAction, 
+        ActionListener onDrawClick) {
+
         this.player = player;
         this.enemy = enemy;
 
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10)); 
         setBackground(BAR_BACKGROUND);
         setPreferredSize(new Dimension(0, BAR_HEIGHT)); 
+
+        // --- Botão para saque adicional ---
+        RoundedButton drawButton = new RoundedButton("Draw", 10);
+        drawButton.setFont(new Font("SansSerif", Font.BOLD, 11));
+        drawButton.setBackground(Colors.OPTION_BUTTON);
+        drawButton.setForeground(Colors.TEXT_OPTION_BUTTON);
+        drawButton.setPreferredSize(new Dimension(70, 25));
+        drawButton.addActionListener(onDrawClick);
+        add(drawButton);
+
 
         // --- Botão de Pause ---
         RoundedButton pauseButton = new RoundedButton("Pause", 10);
