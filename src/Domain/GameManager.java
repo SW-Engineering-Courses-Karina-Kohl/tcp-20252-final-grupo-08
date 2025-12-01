@@ -69,6 +69,12 @@ public class GameManager {
         if (!isPlayerTurn)
             return;
 
+        List<MonsterCard> monsters = player.getBoard().getMonsters();
+        for (int i = 0; i < 5; i++) {
+            if (monsters.get(i) != null) {
+                monsters.get(i).setAttacked(false);
+            }
+        }
         isPlayerTurn = false;
         startEnemyTurn();
     }
